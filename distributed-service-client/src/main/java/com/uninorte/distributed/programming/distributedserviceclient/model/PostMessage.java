@@ -73,4 +73,8 @@ public class PostMessage {
         this.userId = userId;
     }
     
+    public String toString() {
+        return "Post [title=" + this.post_title + ", content=" + this.post_content + ", user=" + this.userId + "]";
+    }
+    
 }

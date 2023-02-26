@@ -4,13 +4,21 @@
  */
 package com.uninorte.distributed.programming.distributedserviceclient.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
+import com.uninorte.distributed.programming.distributedserviceclient.model.TCPNotification;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,23 +29,36 @@ import org.springframework.stereotype.Component;
 @Sharable
 public class TCPHandler extends ChannelInboundHandlerAdapter {
     
-    private Logger logger = LoggerFactory.getLogger(TCPService.class);
+    private Logger log = LoggerFactory.getLogger(TCPService.class);
+    
+    @Autowired
+    private DistributedServiceProxy proxy;
+    
+    @Autowired
+    private ClientContext token;
     
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        ByteBuf buffer = (ByteBuf) msg;
-        logger.info("Received notification: " + buffer.toString(CharsetUtil.UTF_8));
-        buffer.release();
+        try {
+            ByteBuf buffer = (ByteBuf) msg;
+            log.info("Received notification: " + buffer.toString(CharsetUtil.UTF_8));
+            TCPNotification notification = new ObjectMapper().readValue(ByteBufUtil.getBytes(buffer), TCPNotification.class);
+            List<PostMessage> posts = proxy.getPosts(token.getToken(), notification.getUser_id());
+            log.info("Received new post messages: " + Arrays.toString(posts.toArray()));
+            buffer.release();
+        } catch (IOException ex) {
+            log.error("Error", ex);
+        }
     }
     
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("Connected to server: " + ctx.channel().remoteAddress());
+        log.info("Connected to server: " + ctx.channel().remoteAddress());
     }
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        logger.error("Error", cause);
+        log.error("Error", cause);
         ctx.close();
     }
     

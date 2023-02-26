@@ -36,8 +36,12 @@ public class PostController {
     private TCPService tcp;
     
     @GetMapping(path = "/posts")
-    public List<PostMessage> getByUser(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam int user_id) {
+    public List<PostMessage> get(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id) {
         auth.authorize(authorization);
+        
+        if (user_id == null) {
+            return postRepo.findAll();
+        }
         
         return postRepo.findByUserId(user_id);
     }

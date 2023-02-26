@@ -36,7 +36,7 @@ public interface DistributedServiceProxy {
     public List<User> deleteUser(@RequestParam int user_id);
     
     @GetMapping(path = "/posts")
-    public List<PostMessage> getPostsByUser(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam int user_id);
+    public List<PostMessage> getPosts(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id);
     
     @PostMapping(path = "/posts/create")
     public PostMessage createPost(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestBody PostMessage post);

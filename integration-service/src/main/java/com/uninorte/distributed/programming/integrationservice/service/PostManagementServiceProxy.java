@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface PostManagementServiceProxy {
     
     @GetMapping(path = "/posts")
-    public List<PostMessage> getByUser(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam int user_id);
+    public List<PostMessage> get(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id);
     
     @PostMapping(path = "/posts/create")
     public PostMessage create(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestBody PostMessage post);

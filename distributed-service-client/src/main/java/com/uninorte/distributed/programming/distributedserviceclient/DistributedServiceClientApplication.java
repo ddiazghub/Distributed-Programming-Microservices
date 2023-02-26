@@ -1,8 +1,10 @@
 package com.uninorte.distributed.programming.distributedserviceclient;
 
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
-import com.uninorte.distributed.programming.distributedserviceclient.model.User;
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
+import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
+import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.slf4j.Logger;
@@ -12,18 +14,26 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 @EnableFeignClients
 public class DistributedServiceClientApplication implements CommandLineRunner {
     
     private Logger log = LoggerFactory.getLogger(DistributedServiceClientApplication.class);
+    private static ConfigurableApplicationContext appCtx;
     
     @Autowired
     private DistributedServiceProxy proxy;
     
+    @Autowired
+    private ClientContext context;
+    
+    @Autowired
+    private List<TCPService> tcpServices;
+    
     public static void main(String[] args) {
-        SpringApplication.run(DistributedServiceClientApplication.class, args);
+        appCtx = SpringApplication.run(DistributedServiceClientApplication.class, args);
     }
     
     @Override
@@ -33,12 +43,17 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
         
         exec.execute(() -> {
             try {
-                Thread.sleep(5000);
-                User user = new User(100, "name", "hello123", "name@email.com");
-                String token = proxy.createUser(user);
+                Thread.sleep(30000);
+                context.init();
                 PostMessage post = new PostMessage(100, "title", "Hello World!!!", 100, null);
-                proxy.createPost(token, post);
+                proxy.createPost(context.getToken(), post);
+                Thread.sleep(5000);
+                
+                for (TCPService tcp : this.tcpServices)
+                    tcp.stop();
+                
                 log.info("Application finished");
+                appCtx.close();
             } catch (InterruptedException ex) {
                 log.error("Error", ex);
                 Thread.currentThread().interrupt();

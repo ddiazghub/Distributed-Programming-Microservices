@@ -14,7 +14,6 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -80,7 +79,6 @@ public class TCPConfiguration {
     public ApplicationListener<ApplicationReadyEvent> readyEventApplicationListener(Bootstrap bootstrap, ThreadPoolTaskExecutor exec) {
         return event -> {
             for (InetSocketAddress address : tcpSocketAddresses()) {
-                LoggerFactory.getLogger(TCPConfiguration.class).info(address.toString());
                 TCPService tcp = new TCPService(bootstrap, address);
                 tcpServices().add(tcp);
                 exec.execute(tcp);

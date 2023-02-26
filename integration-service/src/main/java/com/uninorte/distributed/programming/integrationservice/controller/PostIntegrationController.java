@@ -26,8 +26,8 @@ public class PostIntegrationController {
     private PostManagementServiceProxy proxy;
     
     @GetMapping(path = "/posts")
-    public List<PostMessage> getByUser(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam int user_id) {
-        return proxy.getByUser(authorization, user_id);
+    public List<PostMessage> get(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id) {
+        return proxy.get(authorization, user_id);
     }
     
     @PostMapping(path = "/posts/create")
