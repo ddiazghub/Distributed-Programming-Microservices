@@ -25,6 +25,7 @@ public class TCPService implements Runnable {
     private Channel channel;
     private Logger log = LoggerFactory.getLogger(TCPService.class);
     private AtomicBoolean active;
+    
     @Value("${tcp.poll.interval}")
     private int pollInterval;
     

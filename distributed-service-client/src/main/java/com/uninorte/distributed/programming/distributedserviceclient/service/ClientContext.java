@@ -6,8 +6,8 @@ package com.uninorte.distributed.programming.distributedserviceclient.service;
 
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.model.User;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class ClientContext {
     
     private String token;
     private User user;
-    private List<PostMessage> posts;
+    private Queue<PostMessage> posts;
     
     private DistributedServiceProxy proxy;
     
@@ -29,10 +29,10 @@ public class ClientContext {
         this.proxy = proxy;
     }
 
-    public void init() {
-        this.user = new User(100, "name", "hello123", "name@email.com");
+    public void init(User user) {
+        this.user = user;
         this.token = proxy.createUser(user);
-        this.posts = proxy.getPosts(token, null);
+        this.posts = new ConcurrentLinkedQueue<>(proxy.getPosts(token, null));
     }
     
     public String getToken() {
@@ -43,7 +43,7 @@ public class ClientContext {
         this.token = token;
     }
 
-    public List<PostMessage> getPosts() {
+    public Queue<PostMessage> getPosts() {
         return posts;
     }
 

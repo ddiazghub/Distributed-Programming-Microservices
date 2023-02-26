@@ -1,6 +1,7 @@
 package com.uninorte.distributed.programming.distributedserviceclient;
 
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
+import com.uninorte.distributed.programming.distributedserviceclient.model.User;
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
 import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
 import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
@@ -44,7 +45,8 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
         exec.execute(() -> {
             try {
                 Thread.sleep(30000);
-                context.init();
+                User user = new User(100, "name", "hello123", "name@email.com");
+                context.init(user);
                 PostMessage post = new PostMessage(100, "title", "Hello World!!!", 100, null);
                 proxy.createPost(context.getToken(), post);
                 Thread.sleep(5000);
