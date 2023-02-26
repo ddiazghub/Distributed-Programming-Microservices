@@ -54,12 +54,12 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
                 
                 for (TCPService tcp : this.tcpServices)
                     tcp.stop();
-                
-                log.info("Application finished");
             } catch (Exception ex) {
                 log.error("Error", ex);
-                appCtx.close();
             }
+
+            log.info("Application finished");
+            appCtx.close();
         });
     }
 
