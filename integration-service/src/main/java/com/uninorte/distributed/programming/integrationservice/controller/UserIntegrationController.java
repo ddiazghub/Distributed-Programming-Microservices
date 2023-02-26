@@ -6,6 +6,7 @@ package com.uninorte.distributed.programming.integrationservice.controller;
 
 import com.uninorte.distributed.programming.integrationservice.service.UserManagementServiceProxy;
 import com.uninorte.distributed.programming.integrationservice.model.User;
+import com.uninorte.distributed.programming.integrationservice.model.UserWithToken;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +38,7 @@ public class UserIntegrationController {
     }
     
     @PostMapping(path = "/users/create")
-    public String createUser(@RequestBody User user) {
+    public UserWithToken createUser(@RequestBody User user) {
         return proxy.createUser(user);
     }
     

@@ -45,9 +45,10 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
         exec.execute(() -> {
             try {
                 Thread.sleep(30000);
-                User user = new User(100, "name", "hello123", "name@email.com");
+                User user = new User("name", "hello123", "name@email.com");
                 context.init(user);
-                PostMessage post = new PostMessage(100, "title", "Hello World!!!", 100, null);
+                user = context.getUser();
+                PostMessage post = new PostMessage("title", "Hello World!!!", user.getUser_id());
                 proxy.createPost(context.getToken(), post);
                 Thread.sleep(5000);
                 
@@ -55,10 +56,9 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
                     tcp.stop();
                 
                 log.info("Application finished");
-                appCtx.close();
-            } catch (InterruptedException ex) {
+            } catch (Exception ex) {
                 log.error("Error", ex);
-                Thread.currentThread().interrupt();
+                appCtx.close();
             }
         });
     }

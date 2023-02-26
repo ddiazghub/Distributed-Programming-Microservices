@@ -4,31 +4,35 @@
  */
 package com.uninorte.distributed.programming.distributedserviceclient.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  *
  * @author david
  */
 public class User {
     
-    private int user_id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer user_id;
+    
     private String user_name;
     private String user_password;
     private String user_email;
     
     public User() {}
 
-    public User(int user_id, String user_name, String user_password, String user_email) {
-        this.user_id = user_id;
+    public User(String user_name, String user_password, String user_email) {
         this.user_name = user_name;
         this.user_password = user_password;
         this.user_email = user_email;
     }
 
-    public int getUser_id() {
+    public Integer getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUser_id(Integer user_id) {
         this.user_id = user_id;
     }
 

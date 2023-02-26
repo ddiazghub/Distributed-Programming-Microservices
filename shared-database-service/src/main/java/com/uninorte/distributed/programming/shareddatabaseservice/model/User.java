@@ -4,8 +4,11 @@
  */
 package com.uninorte.distributed.programming.shareddatabaseservice.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 /**
@@ -15,25 +18,29 @@ import jakarta.persistence.Id;
 @Entity(name = "ServiceUser")
 public class User {
     
-    @Id private int user_id;
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer user_id;
+    
     @Column private String user_name;
     @Column private String user_password;
     @Column private String user_email;
     
     public User() {}
 
-    public User(int user_id, String user_name, String user_password, String user_email) {
+    public User(Integer user_id, String user_name, String user_password, String user_email) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_password = user_password;
         this.user_email = user_email;
     }
 
-    public int getUser_id() {
+    public Integer getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUser_id(Integer user_id) {
         this.user_id = user_id;
     }
 

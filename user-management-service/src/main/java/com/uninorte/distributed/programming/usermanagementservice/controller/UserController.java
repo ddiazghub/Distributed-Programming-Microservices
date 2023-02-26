@@ -6,6 +6,7 @@ package com.uninorte.distributed.programming.usermanagementservice.controller;
 
 import com.uninorte.distributed.programming.usermanagementservice.repository.UserRepository;
 import com.uninorte.distributed.programming.usermanagementservice.model.User;
+import com.uninorte.distributed.programming.usermanagementservice.model.UserWithToken;
 import com.uninorte.distributed.programming.usermanagementservice.service.AuthorizationService;
 import java.time.Instant;
 import java.util.List;
@@ -42,11 +43,12 @@ public class UserController {
     }
     
     @PostMapping(path = "/users/create")
-    public String createUser(@RequestBody User user) {
-        repo.save(user);
+    public UserWithToken createUser(@RequestBody User user) {
+        User createdUser = repo.save(user);
         String timestamp = Long.toString(Instant.now().getEpochSecond());
+        String token = auth.getToken(createdUser, timestamp);
         
-        return auth.getToken(user, timestamp);
+        return new UserWithToken(createdUser, token);
     }
     
     @DeleteMapping(path = "/users/delete")

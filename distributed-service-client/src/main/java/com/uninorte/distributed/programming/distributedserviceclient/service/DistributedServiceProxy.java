@@ -6,6 +6,7 @@ package com.uninorte.distributed.programming.distributedserviceclient.service;
 
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.model.User;
+import com.uninorte.distributed.programming.distributedserviceclient.model.UserWithToken;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,7 @@ public interface DistributedServiceProxy {
     public User getUser(@PathVariable int user_id);
     
     @PostMapping(path = "/users/create")
-    public String createUser(@RequestBody User user);
+    public UserWithToken createUser(@RequestBody User user);
     
     @DeleteMapping(path = "/users/delete")
     public List<User> deleteUser(@RequestParam int user_id);

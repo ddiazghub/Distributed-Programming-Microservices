@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.sql.Timestamp;
 
@@ -19,7 +21,11 @@ import java.sql.Timestamp;
 @Entity
 public class PostMessage {
     
-    @Id private int post_id;
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @JsonInclude(Include.NON_NULL)
+    private Integer post_id;
+    
     @Column private String post_title;
     @Column private String post_content;
     
@@ -33,7 +39,7 @@ public class PostMessage {
 
     public PostMessage() {}
 
-    public PostMessage(int post_id, String post_title, String post_content, int userId, Timestamp post_creation_timestamp) {
+    public PostMessage(Integer post_id, String post_title, String post_content, int userId, Timestamp post_creation_timestamp) {
         this.post_id = post_id;
         this.post_title = post_title;
         this.post_content = post_content;
@@ -41,11 +47,11 @@ public class PostMessage {
         this.post_creation_timestamp = post_creation_timestamp;
     }
 
-    public int getPost_id() {
+    public Integer getPost_id() {
         return post_id;
     }
 
-    public void setPost_id(int post_id) {
+    public void setPost_id(Integer post_id) {
         this.post_id = post_id;
     }
 
