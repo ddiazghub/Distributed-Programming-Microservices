@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,9 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 	private List<TCPService> tcpServices;
 	private JPanel contentPane;
 	private static DistributedServiceClientAppView frame;
-
+	private JTextField UserIdField;
+	private JTextField PasswordField;
+	private JTextField FormEmailField;
 	/**
 	 * Launch the application.
 	 */
@@ -76,26 +79,6 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		lblNewLabel.setBounds(44, 29, 300, 23);
 		contentPane.add(lblNewLabel);
 		
-		Button btnConnectWindow = new Button("Create Client\r\n");
-		btnConnectWindow.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				//create user
-				
-				User user = new User("aaa", "hello123", "name@email.com");
-	            context.init(user);
-	            user = context.getUser();             
-				DistributedServiceClientAppViewTcpClientConnected connectionFrame = new DistributedServiceClientAppViewTcpClientConnected();		
-				connectionFrame.setVisible(true);
-				frame.setVisible(false);
-				
-								
-			}
-		});
-		
-		btnConnectWindow.setBounds(97, 195, 164, 31);
-		contentPane.add(btnConnectWindow);
-		
 		JLabel lblNewLabel_1 = new JLabel("User ID:\r\n");
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -105,6 +88,7 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		JTextField UserIdField = new JTextField();
 		UserIdField.setBounds(165, 98, 127, 22);
 		contentPane.add(UserIdField);
+		this.UserIdField = UserIdField;
 		
 		JLabel lblNewLabel_1_1 = new JLabel("Password:");
 		lblNewLabel_1_1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -115,6 +99,7 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		JTextField PasswordField = new JTextField();
 		PasswordField.setBounds(165, 123, 127, 22);
 		contentPane.add(PasswordField);
+		this.PasswordField = PasswordField;
 		
 		JLabel lblNewLabel_1_2 = new JLabel("Email:");
 		lblNewLabel_1_2.setHorizontalAlignment(SwingConstants.CENTER);
@@ -125,8 +110,33 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		JTextField FormEmailField = new JTextField();
 		FormEmailField.setBounds(165, 148, 127, 22);
 		contentPane.add(FormEmailField);
+		this.FormEmailField = FormEmailField;
+		
+		Button btnConnectWindow = new Button("Create Client\r\n");
+		btnConnectWindow.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				//create user
+				if(UserIdField.getText()!= "" && PasswordField.getText() != "" && FormEmailField.getText()!="") {
+					User user = new User(UserIdField.getText(), PasswordField.getText(), FormEmailField.getText());
+		            context.init(user);
+		            user = context.getUser();   
+				}else{
+					showMessageDialog(null, "There are empty fields, please write info");
+				}
+				          
+				DistributedServiceClientAppViewTcpClientConnected connectionFrame = new DistributedServiceClientAppViewTcpClientConnected();		
+				connectionFrame.setVisible(true);
+				frame.setVisible(false);
+									
+			}
+		});
+		
+		btnConnectWindow.setBounds(97, 195, 164, 31);
+		contentPane.add(btnConnectWindow);
+		
 	}
-
+	
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
