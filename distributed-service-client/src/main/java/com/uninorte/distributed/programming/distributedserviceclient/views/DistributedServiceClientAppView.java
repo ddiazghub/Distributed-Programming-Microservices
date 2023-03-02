@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import org.slf4j.Logger;
@@ -55,17 +56,7 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 	public static String[] argsvariable;
 	
 	public static void main(String[] args) {
-		//appCtx = SpringApplication.run(DistributedServiceClientAppView.class, argsvariable);
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					frame = new DistributedServiceClientAppView();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		appCtx = SpringApplication.run(DistributedServiceClientAppView.class, args);
 	}
 
 	/**
@@ -89,9 +80,12 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		btnConnectWindow.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
+				//create user
 				
-				DistributedServiceClientAppViewTcpClientConnected connectionFrame = new DistributedServiceClientAppViewTcpClientConnected();
-				
+				User user = new User("aaa", "hello123", "name@email.com");
+	            context.init(user);
+	            user = context.getUser();             
+				DistributedServiceClientAppViewTcpClientConnected connectionFrame = new DistributedServiceClientAppViewTcpClientConnected();		
 				connectionFrame.setVisible(true);
 				frame.setVisible(false);
 				
@@ -108,7 +102,7 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		lblNewLabel_1.setBounds(73, 98, 64, 14);
 		contentPane.add(lblNewLabel_1);
 		
-		TextField UserIdField = new TextField();
+		JTextField UserIdField = new JTextField();
 		UserIdField.setBounds(165, 98, 127, 22);
 		contentPane.add(UserIdField);
 		
@@ -118,7 +112,7 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		lblNewLabel_1_1.setBounds(73, 123, 74, 14);
 		contentPane.add(lblNewLabel_1_1);
 		
-		TextField PasswordField = new TextField();
+		JTextField PasswordField = new JTextField();
 		PasswordField.setBounds(165, 123, 127, 22);
 		contentPane.add(PasswordField);
 		
@@ -128,38 +122,24 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		lblNewLabel_1_2.setBounds(73, 148, 64, 14);
 		contentPane.add(lblNewLabel_1_2);
 		
-		TextField FormEmailField = new TextField();
+		JTextField FormEmailField = new JTextField();
 		FormEmailField.setBounds(165, 148, 127, 22);
 		contentPane.add(FormEmailField);
 	}
 
-	public void connectNewUser(){
-		appCtx = SpringApplication.run(DistributedServiceClientAppView.class, argsvariable);
+	@Override
+	public void run(String... args) throws Exception {
+		// TODO Auto-generated method stub
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					frame = new DistributedServiceClientAppView();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		
 	}
-	@Override
-    public void run(String... args) {
-        log.info("Application started");
-        ExecutorService exec = Executors.newSingleThreadExecutor();
-        
-        exec.execute(() -> {
-            try {
-                Thread.sleep(30000);
-                User user = new User("name", "hello123", "name@email.com");
-                context.init(user);
-                user = context.getUser();
-                PostMessage post = new PostMessage("title", "Hello World!!!", user.getUser_id());
-                proxy.createPost(context.getToken(), post);
-                Thread.sleep(5000);
-                
-                for (TCPService tcp : this.tcpServices)
-                    tcp.stop();
-            } catch (Exception ex) {
-                log.error("Error", ex);
-            }
-
-            log.info("Application finished");
-            appCtx.close();
-        });
-	 }
 }
