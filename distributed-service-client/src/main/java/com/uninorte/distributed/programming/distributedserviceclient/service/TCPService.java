@@ -9,7 +9,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,20 +64,4 @@ public class TCPService implements Runnable {
             this.channel.close();
         }
     }
-    
-    /*
-    public void broadcastNewPost(int user_id) {
-        try {
-            
-            log.info("Pushing notification to all clients");
-            TCPNotification notification = new TCPNotification(user_id);
-            byte[] json = new ObjectMapper().writeValueAsBytes(notification);
-            this.channels.writeAndFlush(Unpooled.copiedBuffer(json));
-            log.info("Notification sent");
-        } catch (JsonProcessingException ex) {
-            log.error("Error", ex);
-        }
-    }
-    */
-        
 }

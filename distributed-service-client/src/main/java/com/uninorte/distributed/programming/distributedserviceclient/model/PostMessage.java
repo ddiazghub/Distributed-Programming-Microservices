@@ -78,4 +78,8 @@ public class PostMessage {
         return "Post [title=" + this.post_title + ", content=" + this.post_content + ", user=" + this.userId + "]";
     }
     
+    @Override
+    public int hashCode() {
+        return this.post_id;
+    }
 }

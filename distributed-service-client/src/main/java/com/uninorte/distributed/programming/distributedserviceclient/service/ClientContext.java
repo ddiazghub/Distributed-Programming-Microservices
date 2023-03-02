@@ -7,8 +7,8 @@ package com.uninorte.distributed.programming.distributedserviceclient.service;
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.model.User;
 import com.uninorte.distributed.programming.distributedserviceclient.model.UserWithToken;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ public class ClientContext {
     
     private String token;
     private User user;
-    private Queue<PostMessage> posts;
+    private Set<PostMessage> posts;
     
     private DistributedServiceProxy proxy;
     
@@ -34,7 +34,7 @@ public class ClientContext {
         UserWithToken data = this.proxy.createUser(user);
         this.user = data.getUser();
         this.token = data.getToken();
-        this.posts = new ConcurrentLinkedQueue<>(this.proxy.getPosts(this.token, null));
+        this.posts = new ConcurrentSkipListSet<>(this.proxy.getPosts(this.token, null));
     }
     
     public String getToken() {
@@ -45,7 +45,7 @@ public class ClientContext {
         this.token = token;
     }
 
-    public Queue<PostMessage> getPosts() {
+    public Set<PostMessage> getPosts() {
         return posts;
     }
 
