@@ -17,7 +17,7 @@ import javax.swing.JScrollBar;
 public class DistributedServiceClientAppViewTcpClientConnected extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField tokenIdField;
 	private JTextField postMessageField;
 
 	/**
@@ -59,11 +59,11 @@ public class DistributedServiceClientAppViewTcpClientConnected extends JFrame {
 		lblNewLabel_1.setBounds(45, 105, 76, 14);
 		contentPane.add(lblNewLabel_1);
 		
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setBounds(146, 102, 338, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		tokenIdField = new JTextField();
+		tokenIdField.setEditable(false);
+		tokenIdField.setBounds(146, 102, 338, 20);
+		contentPane.add(tokenIdField);
+		tokenIdField.setColumns(10);
 		
 		JLabel lblNewLabel_1_1 = new JLabel("Post Message:");
 		lblNewLabel_1_1.setFont(new Font("Arial", Font.BOLD, 12));

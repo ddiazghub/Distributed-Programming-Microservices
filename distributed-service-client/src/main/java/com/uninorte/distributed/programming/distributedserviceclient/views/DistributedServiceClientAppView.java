@@ -5,24 +5,57 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.ConfigurableApplicationContext;
+
+import com.uninorte.distributed.programming.distributedserviceclient.DistributedServiceClientApplication;
+import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
+import com.uninorte.distributed.programming.distributedserviceclient.model.User;
+import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
+import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
+import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.awt.event.ActionEvent;
 import java.awt.Button;
 import javax.swing.SwingConstants;
 import java.awt.TextField;
 
-public class DistributedServiceClientAppView extends JFrame {
+@SpringBootApplication
+@EnableFeignClients
+public class DistributedServiceClientAppView extends JFrame implements CommandLineRunner {
 
+	private Logger log = LoggerFactory.getLogger(DistributedServiceClientApplication.class);
+	private static ConfigurableApplicationContext appCtx;   
+	@Autowired
+	private DistributedServiceProxy proxy;    
+	@Autowired
+	private ClientContext context;    
+	@Autowired
+	private List<TCPService> tcpServices;
 	private JPanel contentPane;
+	private static DistributedServiceClientAppView frame;
 
 	/**
 	 * Launch the application.
 	 */
-	public static DistributedServiceClientAppView frame;
+	public static String[] argsvariable;
+	
 	public static void main(String[] args) {
+		//appCtx = SpringApplication.run(DistributedServiceClientAppView.class, argsvariable);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -54,9 +87,11 @@ public class DistributedServiceClientAppView extends JFrame {
 		
 		Button btnConnectWindow = new Button("Create Client\r\n");
 		btnConnectWindow.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
 				
 				DistributedServiceClientAppViewTcpClientConnected connectionFrame = new DistributedServiceClientAppViewTcpClientConnected();
+				
 				connectionFrame.setVisible(true);
 				frame.setVisible(false);
 				
@@ -97,4 +132,34 @@ public class DistributedServiceClientAppView extends JFrame {
 		FormEmailField.setBounds(165, 148, 127, 22);
 		contentPane.add(FormEmailField);
 	}
+
+	public void connectNewUser(){
+		appCtx = SpringApplication.run(DistributedServiceClientAppView.class, argsvariable);
+		
+	}
+	@Override
+    public void run(String... args) {
+        log.info("Application started");
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        
+        exec.execute(() -> {
+            try {
+                Thread.sleep(30000);
+                User user = new User("name", "hello123", "name@email.com");
+                context.init(user);
+                user = context.getUser();
+                PostMessage post = new PostMessage("title", "Hello World!!!", user.getUser_id());
+                proxy.createPost(context.getToken(), post);
+                Thread.sleep(5000);
+                
+                for (TCPService tcp : this.tcpServices)
+                    tcp.stop();
+            } catch (Exception ex) {
+                log.error("Error", ex);
+            }
+
+            log.info("Application finished");
+            appCtx.close();
+        });
+	 }
 }
