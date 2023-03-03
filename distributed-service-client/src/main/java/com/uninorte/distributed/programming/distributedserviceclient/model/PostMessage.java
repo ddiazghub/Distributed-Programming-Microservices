@@ -13,7 +13,7 @@ import java.sql.Timestamp;
  *
  * @author david
  */
-public class PostMessage {
+public class PostMessage implements Comparable<PostMessage>{
     
     @JsonInclude(Include.NON_NULL)
     private Integer post_id;
@@ -82,4 +82,10 @@ public class PostMessage {
     public int hashCode() {
         return this.post_id;
     }
+
+	@Override
+	public int compareTo(PostMessage o) {
+		// TODO Auto-generated method stub
+		return this.post_id.compareTo(o.post_id);
+	}
 }

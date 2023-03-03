@@ -1,4 +1,4 @@
-package com.uninorte.distributed.programming.distributedserviceclient.views;
+package com.uninorte.distributed.programming.distributedserviceclient;
 
 import java.awt.EventQueue;
 
@@ -16,6 +16,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import com.uninorte.distributed.programming.distributedserviceclient.DistributedServiceClientApplication;
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
@@ -35,19 +37,17 @@ import java.awt.event.ActionEvent;
 import java.awt.Button;
 import javax.swing.SwingConstants;
 import java.awt.TextField;
+import javax.swing.JScrollPane;
 
-@SpringBootApplication
-@EnableFeignClients
-public class DistributedServiceClientAppView extends JFrame implements CommandLineRunner {
 
-	private Logger log = LoggerFactory.getLogger(DistributedServiceClientApplication.class);
-	private static ConfigurableApplicationContext appCtx;   
-	@Autowired
-	private DistributedServiceProxy proxy;    
-	@Autowired
-	private ClientContext context;    
-	@Autowired
+public class DistributedServiceClientAppView extends JFrame {
+
+	private Logger log = LoggerFactory.getLogger(DistributedServiceClientApplication.class); 
+	
+	private DistributedServiceProxy proxy;
+	private ClientContext context;
 	private List<TCPService> tcpServices;
+	
 	private JPanel contentPane;
 	private static DistributedServiceClientAppView frame;
 	private JTextField UserIdField;
@@ -57,17 +57,16 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 	 * Launch the application.
 	 */
 	public static String[] argsvariable;
-	
-	public static void main(String[] args) {
-		appCtx = SpringApplication.run(DistributedServiceClientAppView.class, args);
-	}
 
 	/**
 	 * Create the frame.
 	 */
-	public DistributedServiceClientAppView() {
+	public DistributedServiceClientAppView(DistributedServiceProxy proxy, ClientContext context, List<TCPService> tcpServices) {
+		this.proxy = proxy;
+		this.context = context;
+		this.tcpServices = tcpServices;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 400, 345);
+		setBounds(100, 100, 387, 312);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -79,7 +78,7 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		lblNewLabel.setBounds(44, 29, 300, 23);
 		contentPane.add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("User ID:\r\n");
+		JLabel lblNewLabel_1 = new JLabel("Username:");
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setFont(new Font("Arial", Font.PLAIN, 12));
 		lblNewLabel_1.setBounds(73, 98, 64, 14);
@@ -111,6 +110,7 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 		FormEmailField.setBounds(165, 148, 127, 22);
 		contentPane.add(FormEmailField);
 		this.FormEmailField = FormEmailField;
+		JFrame view = this;
 		
 		Button btnConnectWindow = new Button("Create Client\r\n");
 		btnConnectWindow.addActionListener(new ActionListener() {
@@ -118,38 +118,28 @@ public class DistributedServiceClientAppView extends JFrame implements CommandLi
 			public void actionPerformed(ActionEvent e) {
 				//create user
 				if(UserIdField.getText()!= "" && PasswordField.getText() != "" && FormEmailField.getText()!="") {
+					
 					User user = new User(UserIdField.getText(), PasswordField.getText(), FormEmailField.getText());
 		            context.init(user);
-		            user = context.getUser();   
+		            user = context.getUser();
+		            
+		            EventQueue.invokeLater(new Runnable() {
+		    			public void run() {
+		    				DistributedServiceClientConnectedView frame = new DistributedServiceClientConnectedView(proxy, context, tcpServices);
+		    				frame.setVisible(true);
+		    				view.dispose();
+		    			}
+		    		});		          
+		            showMessageDialog(null, "Connected");
+		            
 				}else{
 					showMessageDialog(null, "There are empty fields, please write info");
-				}
-				          
-				DistributedServiceClientAppViewTcpClientConnected connectionFrame = new DistributedServiceClientAppViewTcpClientConnected();		
-				connectionFrame.setVisible(true);
-				frame.setVisible(false);
-									
+				}				           								
 			}
 		});
 		
 		btnConnectWindow.setBounds(97, 195, 164, 31);
 		contentPane.add(btnConnectWindow);
-		
-	}
-	
-	@Override
-	public void run(String... args) throws Exception {
-		// TODO Auto-generated method stub
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					frame = new DistributedServiceClientAppView();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
 		
 	}
 }

@@ -26,7 +26,7 @@ public class ClientContext {
     private DistributedServiceProxy proxy;
     
     @Autowired
-    public ClientContext(DistributedServiceProxy proxy) throws InterruptedException {
+    public ClientContext(DistributedServiceProxy proxy){
         this.proxy = proxy;
     }
 
