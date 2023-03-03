@@ -18,7 +18,6 @@ public class PostMessage {
     @JsonInclude(Include.NON_NULL)
     private Integer post_id;
     
-    private String post_title;
     private String post_content;
     
     @JsonProperty("user_id")
@@ -29,8 +28,7 @@ public class PostMessage {
 
     public PostMessage() {}
 
-    public PostMessage(String post_title, String post_content, int userId) {
-        this.post_title = post_title;
+    public PostMessage(String post_content, int userId) {
         this.post_content = post_content;
         this.userId = userId;
     }
@@ -41,14 +39,6 @@ public class PostMessage {
 
     public void setPost_id(Integer post_id) {
         this.post_id = post_id;
-    }
-
-    public String getPost_title() {
-        return post_title;
-    }
-
-    public void setPost_title(String post_title) {
-        this.post_title = post_title;
     }
 
     public String getPost_content() {

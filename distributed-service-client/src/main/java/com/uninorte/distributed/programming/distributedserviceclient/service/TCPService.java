@@ -11,7 +11,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  *
@@ -24,14 +23,13 @@ public class TCPService implements Runnable {
     private Channel channel;
     private Logger log = LoggerFactory.getLogger(TCPService.class);
     private AtomicBoolean active;
-    
-    @Value("${tcp.poll.interval}")
     private int pollInterval;
     
-    public TCPService(Bootstrap bootstrap, InetSocketAddress socketAddress) {
+    public TCPService(Bootstrap bootstrap, InetSocketAddress socketAddress, int pollInterval) {
         this.bootstrap = bootstrap;
         this.socketAddress = socketAddress;
         this.active = new AtomicBoolean(true);
+        this.pollInterval = pollInterval;
     }
     
     @Override
@@ -44,11 +42,11 @@ public class TCPService implements Runnable {
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
-                log.error("Connection attempt to host " + this.socketAddress + " failed. Retrying in 10 seconds");
+                log.error("Connection attempt to host " + this.socketAddress + " failed. Retrying in " + this.pollInterval + " seconds");
             }
             
             try {
-                Thread.sleep(10000);
+                Thread.sleep(this.pollInterval * 1000);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }      

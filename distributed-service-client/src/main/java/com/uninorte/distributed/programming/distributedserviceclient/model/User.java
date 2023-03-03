@@ -5,7 +5,6 @@
 package com.uninorte.distributed.programming.distributedserviceclient.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  *

@@ -31,7 +31,10 @@ public class TCPConfiguration {
     
     @Value("#{${tcp.sockets.addresses}}")
     private List<String> socketAddresses;
-	
+    
+    @Value("${tcp.poll.interval}")
+    private int pollInterval;
+    
     @Bean
     public Bootstrap serverBootstrap(TCPInitializer initializer) {
         Bootstrap b = new Bootstrap();
@@ -79,7 +82,7 @@ public class TCPConfiguration {
     public ApplicationListener<ApplicationReadyEvent> readyEventApplicationListener(Bootstrap bootstrap, ThreadPoolTaskExecutor exec) {
         return event -> {
             for (InetSocketAddress address : tcpSocketAddresses()) {
-                TCPService tcp = new TCPService(bootstrap, address);
+                TCPService tcp = new TCPService(bootstrap, address, this.pollInterval);
                 tcpServices().add(tcp);
                 exec.execute(tcp);
             }

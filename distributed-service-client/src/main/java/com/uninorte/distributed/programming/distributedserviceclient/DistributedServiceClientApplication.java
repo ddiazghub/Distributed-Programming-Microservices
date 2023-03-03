@@ -1,17 +1,11 @@
 package com.uninorte.distributed.programming.distributedserviceclient;
 
-import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
-import com.uninorte.distributed.programming.distributedserviceclient.model.User;
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
 import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
 import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
 
 import java.awt.EventQueue;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.swing.JFrame;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +21,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class DistributedServiceClientApplication implements CommandLineRunner {
     
     private Logger log = LoggerFactory.getLogger(DistributedServiceClientApplication.class);
-    private static ConfigurableApplicationContext appCtx;
+    public static ConfigurableApplicationContext appCtx;
     
     @Autowired
     private DistributedServiceProxy proxy;
@@ -49,13 +43,10 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
     public void run(String... args) {
         log.info("Application started");
     			
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				frame = new DistributedServiceClientAppView(proxy, context, tcpServices);
-				frame.setVisible(true);
-			}
-		});
-        
+        EventQueue.invokeLater(() -> {
+            frame = new DistributedServiceClientAppView(proxy, context, tcpServices);
+            frame.setVisible(true);
+        });
     }
 
 }

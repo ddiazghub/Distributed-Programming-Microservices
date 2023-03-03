@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  *
@@ -15,20 +17,22 @@ import java.sql.Timestamp;
  */
 public class PostMessage implements Comparable<PostMessage>{
     
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("<HH:mm dd.MM.yyyy>");
+    
     @JsonInclude(Include.NON_NULL)
     private Integer post_id;
     
-    private String post_title;
     private String post_content;
-    @JsonProperty("user_id") private int userId;
+    
+    @JsonProperty("user_id")
+    private int userId;
     
     @JsonInclude(Include.NON_NULL)
     private Timestamp post_creation_timestamp;
 
     public PostMessage() {}
 
-    public PostMessage(String post_title, String post_content, int userId) {
-        this.post_title = post_title;
+    public PostMessage(String post_content, int userId) {
         this.post_content = post_content;
         this.userId = userId;
     }
@@ -39,14 +43,6 @@ public class PostMessage implements Comparable<PostMessage>{
 
     public void setPost_id(Integer post_id) {
         this.post_id = post_id;
-    }
-
-    public String getPost_title() {
-        return post_title;
-    }
-
-    public void setPost_title(String post_title) {
-        this.post_title = post_title;
     }
 
     public String getPost_content() {
@@ -75,7 +71,16 @@ public class PostMessage implements Comparable<PostMessage>{
     
     @Override
     public String toString() {
-        return "Post [title=" + this.post_title + ", content=" + this.post_content + ", user=" + this.userId + "]";
+        StringBuilder str = new StringBuilder();
+        String creationDateTime = this.post_creation_timestamp.toLocalDateTime().format(formatter);
+        
+        return str
+            .append(creationDateTime)
+            .append(" [user_id=")
+            .append(this.userId)
+            .append("]: ")
+            .append(this.post_content)
+            .toString();
     }
     
     @Override
@@ -83,9 +88,27 @@ public class PostMessage implements Comparable<PostMessage>{
         return this.post_id;
     }
 
-	@Override
-	public int compareTo(PostMessage o) {
-		// TODO Auto-generated method stub
-		return this.post_id.compareTo(o.post_id);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (obj == null) {
+            return false;
+        }
+        
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        final PostMessage other = (PostMessage) obj;
+        return Objects.equals(this.post_id, other.post_id);
+    }
+
+    @Override
+    public int compareTo(PostMessage o) {
+        // TODO Auto-generated method stub
+        return this.post_id.compareTo(o.post_id);
+    }
 }

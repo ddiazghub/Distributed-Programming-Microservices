@@ -7,8 +7,8 @@ package com.uninorte.distributed.programming.distributedserviceclient.service;
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.model.User;
 import com.uninorte.distributed.programming.distributedserviceclient.model.UserWithToken;
-import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +21,14 @@ public class ClientContext {
     
     private String token;
     private User user;
-    private Set<PostMessage> posts;
+    private ConcurrentSkipListSet<PostMessage> posts;
+    private AtomicBoolean postsChanged;
     
     private DistributedServiceProxy proxy;
     
     @Autowired
     public ClientContext(DistributedServiceProxy proxy){
+        this.postsChanged = new AtomicBoolean(false);
         this.proxy = proxy;
     }
 
@@ -45,7 +47,7 @@ public class ClientContext {
         this.token = token;
     }
 
-    public Set<PostMessage> getPosts() {
+    public ConcurrentSkipListSet<PostMessage> getPosts() {
         return posts;
     }
 
@@ -56,5 +58,14 @@ public class ClientContext {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public boolean getPostsChanged() {
+        return postsChanged.get();
+    }
+
+    public void setPostsChanged(boolean postsChanged) {
+        this.postsChanged.set(postsChanged);
+    }
+    
     
 }

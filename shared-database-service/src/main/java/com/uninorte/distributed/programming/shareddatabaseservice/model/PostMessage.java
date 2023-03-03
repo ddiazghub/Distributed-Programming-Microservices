@@ -26,7 +26,6 @@ public class PostMessage {
     @JsonInclude(Include.NON_NULL)
     private Integer post_id;
     
-    @Column private String post_title;
     @Column private String post_content;
     
     @Column
@@ -39,9 +38,8 @@ public class PostMessage {
 
     public PostMessage() {}
 
-    public PostMessage(Integer post_id, String post_title, String post_content, int userId, Timestamp post_creation_timestamp) {
+    public PostMessage(Integer post_id, String post_content, int userId, Timestamp post_creation_timestamp) {
         this.post_id = post_id;
-        this.post_title = post_title;
         this.post_content = post_content;
         this.userId = userId;
         this.post_creation_timestamp = post_creation_timestamp;
@@ -53,14 +51,6 @@ public class PostMessage {
 
     public void setPost_id(Integer post_id) {
         this.post_id = post_id;
-    }
-
-    public String getPost_title() {
-        return post_title;
-    }
-
-    public void setPost_title(String post_title) {
-        this.post_title = post_title;
     }
 
     public String getPost_content() {

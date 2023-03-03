@@ -43,9 +43,15 @@ public class TCPHandler extends ChannelInboundHandlerAdapter {
             ByteBuf buffer = (ByteBuf) msg;
             log.info("Received notification: " + buffer.toString(CharsetUtil.UTF_8));
             TCPNotification notification = new ObjectMapper().readValue(ByteBufUtil.getBytes(buffer), TCPNotification.class);
-            List<PostMessage> posts = proxy.getPosts(context.getToken(), notification.getUser_id());
-            log.info("Received new post messages: " + Arrays.toString(posts.toArray()));
-            context.getPosts().addAll(posts);
+            String token = context.getToken();
+            
+            if (token != null) {
+                List<PostMessage> posts = proxy.getPosts(context.getToken(), notification.getUser_id());
+                log.info("Received new post messages: " + Arrays.toString(posts.toArray()));
+                context.getPosts().addAll(posts);
+                context.setPostsChanged(true);
+            }
+            
             buffer.release();
         } catch (IOException ex) {
             log.error("Error", ex);
