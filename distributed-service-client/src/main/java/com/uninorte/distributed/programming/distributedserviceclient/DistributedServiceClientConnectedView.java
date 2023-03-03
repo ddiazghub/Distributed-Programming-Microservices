@@ -6,17 +6,23 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
 import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.awt.Button;
 import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
 import java.awt.event.ActionListener;
+import java.security.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
@@ -29,21 +35,6 @@ public class DistributedServiceClientConnectedView extends JFrame {
 	private DistributedServiceProxy proxy;
 	private ClientContext context;
 	private List<TCPService> tcpServices;
-
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					DistributedServiceClientConnectedView frame = new DistributedServiceClientConnectedView();
-					frame.setVisible(true);
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
 
 	/**
 	 * Create the frame.
@@ -88,6 +79,18 @@ public class DistributedServiceClientConnectedView extends JFrame {
 		Button sendPostMessage = new Button("Send Message");
 		sendPostMessage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Date date = new Date();
+				Timestamp timestamp2 = new Timestamp(date, null);
+				if(sendMessageField.getText()!= "") {
+					PostMessage post = new PostMessage(timestamp2+"",sendMessageField.getText(), context.getUser().getUser_id());
+					proxy.createPost(context.getToken(), post);
+								
+					showMessageDialog(null, "Post Sent");
+				}else {
+					
+					showMessageDialog(null, "There are empty fields, please write info");
+				}
+				
 				
 			}
 		});

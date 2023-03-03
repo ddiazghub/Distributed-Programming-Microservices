@@ -53,11 +53,7 @@ public class DistributedServiceClientAppView extends JFrame {
 	private JTextField UserIdField;
 	private JTextField PasswordField;
 	private JTextField FormEmailField;
-	/**
-	 * Launch the application.
-	 */
-	public static String[] argsvariable;
-
+	
 	/**
 	 * Create the frame.
 	 */
