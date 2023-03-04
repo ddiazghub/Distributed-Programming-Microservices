@@ -12,7 +12,7 @@ public class PostManagementServiceApplication2 {
         
         app.setDefaultProperties(Map.of(
             "server.port", "8011",
-            "tcp.server.port", "8021|"
+            "tcp.server.port", "8021"
         ));
         
         app.run(args);
