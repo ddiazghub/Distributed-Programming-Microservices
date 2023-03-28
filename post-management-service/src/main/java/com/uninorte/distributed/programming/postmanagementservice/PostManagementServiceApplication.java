@@ -5,10 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PostManagementServiceApplication1 {
+public class PostManagementServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(PostManagementServiceApplication1.class);
+        SpringApplication app = new SpringApplication(PostManagementServiceApplication.class);
         
         app.setDefaultProperties(Map.of(
             "server.port", "8010",

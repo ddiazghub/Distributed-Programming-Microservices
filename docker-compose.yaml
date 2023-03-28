@@ -1,0 +1,65 @@
+version: '3.7'
+
+services:
+  user-management-service:
+    image: ddiazghub/distributed-programming-usermanagementservice:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8000:8000"
+    networks:
+      - services-network
+    restart: on-failure
+    depends_on:
+      - load-balancer-service
+      - postgres-database-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
+
+  post-management-service:
+    image: ddiazghub/distributed-programming-postmanagementservice:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8010:8010"
+    networks:
+      - services-network
+    restart: on-failure
+    depends_on:
+      - load-balancer-service
+      - postgres-database-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
+
+  postgres-database-service:
+    image: postgres:latest
+    mem_limit: 500m
+    ports:
+      - "5432:5432"
+    networks:
+      - services-network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: testdb
+
+  integration-service:
+    image: ddiazghub/distributed-programming-integrationservice:0.0.1-SNAPSHOT
+    mem_limit: 500m
+    ports:
+      - "8100:8100"
+    networks:
+      - services-network
+    depends_on:
+      - load-balancer-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
+
+  load-balancer-service:
+    image: ddiazghub/distributed-programming-load-balancer-service:0.0.1-SNAPSHOT
+    mem_limit: 500m
+    ports:
+      - "8761:8761"
+    networks:
+      - services-network
+
+networks:
+  services-network:
