@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
+import com.uninorte.distributed.programming.distributedserviceclient.service.FileService;
 import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
 
 import javax.swing.JLabel;
@@ -20,29 +21,35 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DistributedServiceClientConnectedView extends JFrame {
 
+    private Logger log = LoggerFactory.getLogger(DistributedServiceClientAppView.class);
     private JPanel contentPane;
     private JTextField sendMessageField;
     private JTextField tokenIdField;
     private DistributedServiceProxy proxy;
     private ClientContext context;
     private List<TCPService> tcpServices;
-
+    private FileService files;
     private JTextArea postsTextArea;
     
     /**
      * Create the frame.
      */
-    public DistributedServiceClientConnectedView(DistributedServiceProxy proxy, ClientContext context, List<TCPService> tcpServices) {
+    public DistributedServiceClientConnectedView(DistributedServiceProxy proxy, ClientContext context, List<TCPService> tcpServices, FileService files) {
         this.proxy = proxy;
         this.context = context;
         this.tcpServices = tcpServices;
+        this.files = files;
         
         DistributedServiceClientConnectedView view = this;
         
@@ -136,6 +143,17 @@ public class DistributedServiceClientConnectedView extends JFrame {
         
         timer.setRepeats(true);
         timer.start();
+        
+        String filename = "C:\\Users\\david\\Downloads\\linealfor.c";
+        log.info("Uploading file \"" + filename + "\":");
+        
+        try {
+            files.upload(new File(filename));
+            log.info("File uploaded");
+        } catch (IOException ex) {
+            log.error("Error", ex);
+        }
+        
     }
     
     public void printPosts() {

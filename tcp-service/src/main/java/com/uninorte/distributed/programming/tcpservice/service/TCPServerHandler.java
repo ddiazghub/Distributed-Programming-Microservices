@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.uninorte.distributed.programming.postmanagementservice.service;
+package com.uninorte.distributed.programming.tcpservice.service;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -25,7 +25,7 @@ public class TCPServerHandler extends ChannelInboundHandlerAdapter { // (1)
     @Autowired
     private ChannelGroup channels;
     
-    private Logger logger = LoggerFactory.getLogger(TCPService.class);
+    private final Logger logger = LoggerFactory.getLogger(TCPService.class);
     
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) { // (2)
@@ -42,7 +42,7 @@ public class TCPServerHandler extends ChannelInboundHandlerAdapter { // (1)
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
         // Close the connection when an exception is raised.
-        cause.printStackTrace();
+        logger.error("Error", cause);
         ctx.close();
     }
     

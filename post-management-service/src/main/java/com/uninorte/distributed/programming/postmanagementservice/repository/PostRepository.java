@@ -13,7 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author david
  */
 public interface PostRepository extends JpaRepository<PostMessage, Integer> {
-
     List<PostMessage> findByUserId(int userId);
-    
 }

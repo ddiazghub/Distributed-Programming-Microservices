@@ -2,6 +2,7 @@ package com.uninorte.distributed.programming.distributedserviceclient;
 
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
 import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
+import com.uninorte.distributed.programming.distributedserviceclient.service.FileService;
 import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
 
 import java.awt.EventQueue;
@@ -32,6 +33,9 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
     @Autowired
     private List<TCPService> tcpServices;
     
+    @Autowired
+    private FileService files;
+    
     private DistributedServiceClientAppView frame;
     
     public static void main(String[] args) {
@@ -44,7 +48,7 @@ public class DistributedServiceClientApplication implements CommandLineRunner {
         log.info("Application started");
     			
         EventQueue.invokeLater(() -> {
-            frame = new DistributedServiceClientAppView(proxy, context, tcpServices);
+            frame = new DistributedServiceClientAppView(proxy, context, tcpServices, files);
             frame.setVisible(true);
         });
     }

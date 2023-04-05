@@ -1,21 +1,13 @@
 package com.uninorte.distributed.programming.postmanagementservice;
 
-import java.util.Map;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
+@EnableFeignClients
 public class PostManagementServiceApplication {
-
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(PostManagementServiceApplication.class);
-        
-        app.setDefaultProperties(Map.of(
-            "server.port", "8010",
-            "tcp.server.port", "8020"
-        ));
-        
-        app.run(args);
+        SpringApplication.run(PostManagementServiceApplication.class, args);
     }
-
 }

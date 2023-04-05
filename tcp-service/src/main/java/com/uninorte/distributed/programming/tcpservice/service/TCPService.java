@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.uninorte.distributed.programming.postmanagementservice.service;
+package com.uninorte.distributed.programming.tcpservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uninorte.distributed.programming.postmanagementservice.model.TCPNotification;
+import com.uninorte.distributed.programming.tcpservice.TCPNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import io.netty.bootstrap.ServerBootstrap;
@@ -16,6 +16,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.group.ChannelGroup;
 import jakarta.annotation.PreDestroy;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public class TCPService {
     private ChannelGroup channels;
     
     private Channel serverChannel;
-    private Logger logger = LoggerFactory.getLogger(TCPService.class);
+    private final Logger logger = LoggerFactory.getLogger(TCPService.class);
 
     public void start()  {
         try {
@@ -57,12 +58,11 @@ public class TCPService {
         }
     }
     
-    public void broadcastNewPost(int user_id) {
+    public void broadcast(TCPNotification notification) {
         try {
-            logger.info("Pushing notification to all clients");
-            TCPNotification notification = new TCPNotification(user_id);
-            byte[] json = new ObjectMapper().writeValueAsBytes(notification);
-            this.channels.writeAndFlush(Unpooled.copiedBuffer(json));
+            String json = new ObjectMapper().writeValueAsString(notification);
+            logger.info("Pushing notification to all clients: " + json);
+            this.channels.writeAndFlush(Unpooled.copiedBuffer(json, Charset.defaultCharset()));
             logger.info("Notification sent");
         } catch (JsonProcessingException ex) {
             logger.error("Error", ex);

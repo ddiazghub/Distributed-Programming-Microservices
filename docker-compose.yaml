@@ -29,6 +29,34 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
 
+  file-management-service:
+    image: ddiazghub/distributed-programming-filemanagementservice:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8020:8020"
+    networks:
+      - services-network
+    restart: on-failure
+    depends_on:
+      - load-balancer-service
+      - postgres-database-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
+
+  tcp-service:
+    image: ddiazghub/distributed-programming-tcpservice:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8030:8030"
+      - "8040:8040"
+    networks:
+      - services-network
+    restart: on-failure
+    depends_on:
+      - load-balancer-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
+
   postgres-database-service:
     image: postgres:latest
     mem_limit: 500m

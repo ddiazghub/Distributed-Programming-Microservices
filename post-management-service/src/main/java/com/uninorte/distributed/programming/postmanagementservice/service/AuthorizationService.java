@@ -36,7 +36,7 @@ public class AuthorizationService {
         return Base64.encodeBase64URLSafeString(fullText.getBytes());
     }
     
-    public void authorize(String authorization) {
+    public User authorize(String authorization) {
         String authDecoded;
         
         try {
@@ -51,6 +51,8 @@ public class AuthorizationService {
         
         if (!generatedToken.equals(authorization))
             throw new ResponseStatusException(HttpStatusCode.valueOf(401));
+        
+        return user;
     }
     
 }

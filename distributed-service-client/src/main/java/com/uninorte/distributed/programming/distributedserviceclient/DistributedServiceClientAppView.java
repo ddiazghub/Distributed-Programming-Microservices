@@ -11,6 +11,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import com.uninorte.distributed.programming.distributedserviceclient.model.User;
 import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
+import com.uninorte.distributed.programming.distributedserviceclient.service.FileService;
 import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
 
 import javax.swing.JLabel;
@@ -28,7 +29,7 @@ public class DistributedServiceClientAppView extends JFrame {
     private DistributedServiceProxy proxy;
     private ClientContext context;
     private List<TCPService> tcpServices;
-
+    private FileService files;
     private JPanel contentPane;
     private JTextField UserIdField;
     private JTextField PasswordField;
@@ -37,10 +38,11 @@ public class DistributedServiceClientAppView extends JFrame {
     /**
      * Create the frame.
      */
-    public DistributedServiceClientAppView(DistributedServiceProxy proxy, ClientContext context, List<TCPService> tcpServices) {
+    public DistributedServiceClientAppView(DistributedServiceProxy proxy, ClientContext context, List<TCPService> tcpServices, FileService files) {
         this.proxy = proxy;
         this.context = context;
         this.tcpServices = tcpServices;
+        this.files = files;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 387, 312);
         contentPane = new JPanel();
@@ -99,7 +101,7 @@ public class DistributedServiceClientAppView extends JFrame {
                     context.init(user);
                 
                     EventQueue.invokeLater(() -> {
-                        DistributedServiceClientConnectedView frame1 = new DistributedServiceClientConnectedView(proxy, context, tcpServices);
+                        DistributedServiceClientConnectedView frame1 = new DistributedServiceClientConnectedView(proxy, context, tcpServices, files);
                         frame1.setVisible(true);
                         view.dispose();
                     });

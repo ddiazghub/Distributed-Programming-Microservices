@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Sharable
 public class TCPHandler extends ChannelInboundHandlerAdapter {
     
-    private Logger log = LoggerFactory.getLogger(TCPService.class);
+    private Logger log = LoggerFactory.getLogger(TCPHandler.class);
     
     @Autowired
     private DistributedServiceProxy proxy;

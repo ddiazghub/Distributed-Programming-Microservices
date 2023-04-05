@@ -22,8 +22,7 @@ public class ClientContext {
     private String token;
     private User user;
     private ConcurrentSkipListSet<PostMessage> posts;
-    private AtomicBoolean postsChanged;
-    
+    private final AtomicBoolean postsChanged;
     private DistributedServiceProxy proxy;
     
     @Autowired
@@ -66,6 +65,5 @@ public class ClientContext {
     public void setPostsChanged(boolean postsChanged) {
         this.postsChanged.set(postsChanged);
     }
-    
     
 }
