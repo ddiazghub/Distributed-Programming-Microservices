@@ -4,10 +4,14 @@
  */
 package com.uninorte.distributed.programming.filemanagementservice;
 
+import com.uninorte.distributed.programming.filemanagementservice.model.User;
+import com.uninorte.distributed.programming.filemanagementservice.model.UserFile;
+import com.uninorte.distributed.programming.filemanagementservice.repository.FileRepository;
 import com.uninorte.distributed.programming.filemanagementservice.service.AuthorizationService;
 import com.uninorte.distributed.programming.filemanagementservice.service.FileService;
 import com.uninorte.distributed.programming.filemanagementservice.service.TCPServiceProxy;
 import java.io.IOException;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +43,25 @@ public class FileController {
     @Autowired
     private FileService files;
     
+    @Autowired
+    private FileRepository fileRepo;
+    
     private Logger log = LoggerFactory.getLogger(FileController.class);
     
+    @GetMapping(path = "/files")
+    public List<UserFile> getAll(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id) {
+        auth.authorize(authorization);
+        
+        if (user_id == null)
+            return fileRepo.findAll();
+        else return fileRepo.findByUserId(user_id);
+    }
+    
     @PostMapping(path = "/upload")
-    public String upload(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam("file") MultipartFile file) throws IOException {
+    public UserFile upload(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam("file") MultipartFile file) throws IOException {
         User user = auth.authorize(authorization);
-        files.upload(file);
+        String uploadedFilename = files.upload(file);
+        UserFile userFile = new UserFile(user.getUser_id(), uploadedFilename);
         
         try {
             tcp.newFile(user.getUser_id());
@@ -52,12 +69,12 @@ public class FileController {
             log.warn("Could not contact TCP service.");
         }
         
-        return "File uploaded successfully";
+        return fileRepo.save(userFile);
     }
     
     @GetMapping(path = "/download/{filename}")
     public ResponseEntity<FileSystemResource> download(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @PathVariable String filename) throws IOException {
-        //auth.authorize(authorization);
+        auth.authorize(authorization);
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=\"" + filename + "\"");

@@ -4,6 +4,8 @@
  */
 package com.uninorte.distributed.programming.filemanagementservice.exception;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,13 @@ public class ServiceExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = { ResponseStatusException.class, NumberFormatException.class, NoSuchElementException.class })
     protected ResponseEntity<Object> handleUnauthorized(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, "401 Unauthorized", new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+    }
+    
+    @ExceptionHandler(value = { IOException.class })
+    protected ResponseEntity<Object> handleUploadDownloadFail(IOException ex, WebRequest request) {
+        if (ex instanceof FileNotFoundException)
+            return handleExceptionInternal(ex, "404 File not found", new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+        else return handleExceptionInternal(ex, "500 file upload/download error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
     
 }

@@ -1,8 +1,8 @@
 package com.uninorte.distributed.programming.filemanagementservice.service;
 
 
-import com.uninorte.distributed.programming.filemanagementservice.User;
-import com.uninorte.distributed.programming.filemanagementservice.UserRepository;
+import com.uninorte.distributed.programming.filemanagementservice.model.User;
+import com.uninorte.distributed.programming.filemanagementservice.repository.UserRepository;
 import java.io.UnsupportedEncodingException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,10 +33,22 @@ public class FileService {
             Files.createDirectory(this.dir);
     }
     
-    public void upload(MultipartFile file) throws IOException {
-        log.info("Uploading file: " + file.getOriginalFilename());
-        Path filepath = dir.resolve(file.getOriginalFilename());
+    public String upload(MultipartFile file) throws IOException {
+        String filename = file.getOriginalFilename();
+        log.info("Uploading file: " + filename);
+        String[] parts = filename.split("\\.");
+        String extension = "." + (parts.length == 1 ? "" : String.join(".", Arrays.copyOfRange(parts, 1, parts.length)));
+        Path filepath = dir.resolve(filename);
+        int i = 0;
+        
+        while (Files.exists(filepath)) {
+            i++;
+            filepath = dir.resolve(parts[0] + i + extension);
+        }
+        
         Files.copy(file.getInputStream(), filepath);
+        
+        return filepath.getFileName().toString();
     }
     
     public FileSystemResource download(String filename) throws IOException {

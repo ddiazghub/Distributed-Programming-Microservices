@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.uninorte.distributed.programming.filemanagementservice;
+package com.uninorte.distributed.programming.filemanagementservice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -68,4 +68,5 @@ public class User {
     public void setUser_email(String user_email) {
         this.user_email = user_email;
     }
+    
 }
