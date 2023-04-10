@@ -5,7 +5,7 @@ services:
     image: ddiazghub/distributed-programming-usermanagementservice:0.0.1-SNAPSHOT
     mem_limit: 700m
     ports:
-      - "8000:8000"
+      - "8000-8002:8000"
     networks:
       - services-network
     restart: on-failure
@@ -19,7 +19,7 @@ services:
     image: ddiazghub/distributed-programming-postmanagementservice:0.0.1-SNAPSHOT
     mem_limit: 700m
     ports:
-      - "8010:8010"
+      - "8010-8012:8010"
     networks:
       - services-network
     restart: on-failure
@@ -33,13 +33,16 @@ services:
     image: ddiazghub/distributed-programming-filemanagementservice:0.0.1-SNAPSHOT
     mem_limit: 700m
     ports:
-      - "8020:8020"
+      - "8020-8022:8020"
     networks:
       - services-network
     restart: on-failure
     depends_on:
       - load-balancer-service
       - postgres-database-service
+    volumes:
+      - file-service:/data/file-service:rw
+    user: root
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
 
@@ -81,6 +84,14 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://load-balancer-service:8761/eureka
 
+  zipkin-tracing-service:
+    image: openzipkin/zipkin:latest
+    mem_limit: 500m
+    ports:
+      - "9411:9411"
+    networks:
+      - services-network
+
   load-balancer-service:
     image: ddiazghub/distributed-programming-load-balancer-service:0.0.1-SNAPSHOT
     mem_limit: 500m
@@ -91,3 +102,6 @@ services:
 
 networks:
   services-network:
+
+volumes:
+  file-service:

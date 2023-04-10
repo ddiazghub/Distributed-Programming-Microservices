@@ -21,8 +21,12 @@ import java.awt.event.ActionEvent;
 import java.awt.Button;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DistributedServiceClientAppView extends JFrame {
 
@@ -34,6 +38,7 @@ public class DistributedServiceClientAppView extends JFrame {
     private JTextField UserIdField;
     private JTextField PasswordField;
     private JTextField FormEmailField;
+    private Logger log = LoggerFactory.getLogger(DistributedServiceClientAppView.class);
 
     /**
      * Create the frame.
@@ -96,9 +101,19 @@ public class DistributedServiceClientAppView extends JFrame {
             //create user
             if(!"".equals(UserIdField.getText()) && !"".equals(PasswordField.getText()) && !"".equals(FormEmailField.getText())) {
                 User user = new User(UserIdField.getText(), PasswordField.getText(), FormEmailField.getText());
-                
+        
                 try {
                     context.init(user);
+                
+                    String filename = "C:\\Users\\david\\Downloads\\linealfor.c";
+                    log.info("Uploading file \"" + filename + "\":");
+
+                    try {
+                        files.upload(new File(filename));
+                        log.info("File uploaded");
+                    } catch (Exception ex) {
+                        log.error("Error", ex);
+                    }
                 
                     EventQueue.invokeLater(() -> {
                         DistributedServiceClientConnectedView frame1 = new DistributedServiceClientConnectedView(proxy, context, tcpServices, files);

@@ -21,18 +21,13 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DistributedServiceClientConnectedView extends JFrame {
 
-    private Logger log = LoggerFactory.getLogger(DistributedServiceClientAppView.class);
     private JPanel contentPane;
     private JTextField sendMessageField;
     private JTextField tokenIdField;
@@ -143,16 +138,6 @@ public class DistributedServiceClientConnectedView extends JFrame {
         
         timer.setRepeats(true);
         timer.start();
-        
-        String filename = "C:\\Users\\david\\Downloads\\linealfor.c";
-        log.info("Uploading file \"" + filename + "\":");
-        
-        try {
-            files.upload(new File(filename));
-            log.info("File uploaded");
-        } catch (IOException ex) {
-            log.error("Error", ex);
-        }
         
     }
     

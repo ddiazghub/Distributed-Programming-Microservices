@@ -52,9 +52,7 @@ public class FileController {
     public List<UserFile> getAll(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id) {
         auth.authorize(authorization);
         
-        if (user_id == null)
-            return fileRepo.findAll();
-        else return fileRepo.findByUserId(user_id);
+        return user_id == null ? fileRepo.findAll() : fileRepo.findByUserId(user_id);
     }
     
     @PostMapping(path = "/upload")

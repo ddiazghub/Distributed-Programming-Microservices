@@ -43,11 +43,7 @@ public class PostController {
     public List<PostMessage> get(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id) {
         auth.authorize(authorization);
         
-        if (user_id == null) {
-            return postRepo.findAll();
-        }
-        
-        return postRepo.findByUserId(user_id);
+        return user_id == null ? postRepo.findAll() : postRepo.findByUserId(user_id);
     }
     
     @PostMapping(path = "/posts/create")

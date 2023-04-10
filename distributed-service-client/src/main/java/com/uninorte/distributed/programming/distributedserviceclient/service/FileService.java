@@ -4,15 +4,19 @@
  */
 package com.uninorte.distributed.programming.distributedserviceclient.service;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -28,20 +32,37 @@ public class FileService {
     
     private static Path DOWNLOADS = Paths.get(System.getProperty("user.home"));
     
+    private List<URI> urls;
+    private int current = -1;
+    
     @Autowired
-    private DistributedServiceProxy proxy;
+    private FileServiceProxy proxy;
     
     @Autowired
     private ClientContext context;
     
+    public FileService(@Value("#{${file.service.urls}}") List<String> urls) throws URISyntaxException  {
+        this.urls = new ArrayList<>();
+        
+        for (String url : urls) {
+            this.urls.add(new URI(url));
+        }
+    }
+    
+    private URI nextUrl() {
+        this.current = (this.current + 1) % this.urls.size();
+        
+        return this.urls.get(current);
+    }
+    
     public void upload(File file) throws IOException {
         String name = file.getName();
-        MultipartFile multipart = new MockMultipartFile(name, name, null, new BufferedInputStream(new FileInputStream(file)));
-        proxy.uploadFile(context.getToken(), multipart);
+        MultipartFile multipart = new MockMultipartFile(name, name, null, new FileInputStream(file));
+        proxy.uploadFile(nextUrl(), context.getToken(), multipart);
     }
     
     public void download(String filename) throws IOException {
-        ResponseEntity<InputStreamResource> response = proxy.downloadFile(context.getToken(), filename);
+        ResponseEntity<InputStreamResource> response = proxy.downloadFile(nextUrl(), context.getToken(), filename);
         String[] parts = filename.split("\\.");
         String extension = "." + (parts.length == 1 ? "" : String.join(".", Arrays.copyOfRange(parts, 1, parts.length)));
         Path filepath = DOWNLOADS.resolve(filename);

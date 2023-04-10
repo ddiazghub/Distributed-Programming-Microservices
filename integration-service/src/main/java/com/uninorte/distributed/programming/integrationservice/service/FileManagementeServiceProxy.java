@@ -27,10 +27,4 @@ public interface FileManagementeServiceProxy {
     @GetMapping(path = "/files")
     public List<UserFile> getAll(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id);
     
-    @PostMapping(path = "/upload")
-    public UserFile upload(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam("file") MultipartFile file);
-    
-    @GetMapping(path = "/download/{filename}")
-    public ResponseEntity<InputStreamResource> download(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @PathVariable String filename);
-
 }

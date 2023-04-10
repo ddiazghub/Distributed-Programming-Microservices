@@ -6,7 +6,8 @@ package com.uninorte.distributed.programming.integrationservice.controller;
 
 import com.uninorte.distributed.programming.integrationservice.model.UserFile;
 import com.uninorte.distributed.programming.integrationservice.service.FileManagementeServiceProxy;
-import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +29,9 @@ public class FileIntegrationController {
     @Autowired
     private FileManagementeServiceProxy proxy;
     
-    @PostMapping(path = "/files/upload")
-    public UserFile upload(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam("file") MultipartFile file) {
-        return proxy.upload(authorization, file);
-    }
-    
-    @GetMapping(path = "/files/download/{filename}")
-    public ResponseEntity<InputStreamResource> download(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @PathVariable String filename) {
-        return proxy.download(authorization, filename);
+    @GetMapping(path = "/files")
+    public List<UserFile> getAll(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam(required = false) Integer user_id) {
+        return proxy.getAll(authorization, user_id);
     }
     
 }

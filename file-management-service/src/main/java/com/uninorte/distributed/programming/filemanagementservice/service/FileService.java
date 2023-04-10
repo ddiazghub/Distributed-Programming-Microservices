@@ -29,7 +29,7 @@ public class FileService {
     public FileService(@Value("${file.service.dir}") String dir) throws IOException {
         this.dir = Paths.get(dir);
         
-        if (!Files.exists(this.dir))
+        if (!Files.isDirectory(this.dir))
             Files.createDirectory(this.dir);
     }
     
