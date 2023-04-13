@@ -119,6 +119,9 @@ public class DistributedServiceClientConnectedView extends JFrame {
         postsTextArea.setEditable(false);
         panel_2.add(postsTextArea);
         
+        JPanel panel_3 = new JPanel();
+        tabbedPane.addTab("Upload & Download", null, panel_3, null);
+        
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
