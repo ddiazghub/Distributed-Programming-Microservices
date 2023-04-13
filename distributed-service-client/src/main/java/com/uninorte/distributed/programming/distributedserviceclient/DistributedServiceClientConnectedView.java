@@ -28,6 +28,7 @@ import javax.swing.Timer;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
 
 public class DistributedServiceClientConnectedView extends JFrame {
 
@@ -39,6 +40,7 @@ public class DistributedServiceClientConnectedView extends JFrame {
     private List<TCPService> tcpServices;
     private FileService files;
     private JTextArea postsTextArea;
+    private JFileChooser fc;
     
     /**
      * Create the frame.
@@ -126,13 +128,21 @@ public class DistributedServiceClientConnectedView extends JFrame {
         tabbedPane.addTab("Upload & Download", null, panel_3, null);
         panel_3.setLayout(null);
         
-        Button uploadBtn = new Button("Upload File");
-        uploadBtn.setBounds(57, 75, 82, 22);
-        panel_3.add(uploadBtn);
+        Button selectFileBtn = new Button("Select File");
+        selectFileBtn.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		fc = new JFileChooser();
+        		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        		fc.setAcceptAllFileFilterUsed(true);
+        		
+        	}
+        });
+        selectFileBtn.setBounds(51, 52, 82, 22);
+        panel_3.add(selectFileBtn);
         
-        Button downloadBtn = new Button("Download File");
-        downloadBtn.setBounds(185, 75, 82, 22);
-        panel_3.add(downloadBtn);
+        Button uploadBtn = new Button("Upload File");
+        uploadBtn.setBounds(184, 52, 82, 22);
+        panel_3.add(uploadBtn);
         
         this.addWindowListener(new WindowAdapter() {
             @Override
