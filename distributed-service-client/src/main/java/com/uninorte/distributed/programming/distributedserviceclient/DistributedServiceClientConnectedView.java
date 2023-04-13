@@ -25,6 +25,9 @@ import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JTextArea;
 import javax.swing.Timer;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import java.awt.BorderLayout;
 
 public class DistributedServiceClientConnectedView extends JFrame {
 
@@ -121,6 +124,15 @@ public class DistributedServiceClientConnectedView extends JFrame {
         
         JPanel panel_3 = new JPanel();
         tabbedPane.addTab("Upload & Download", null, panel_3, null);
+        panel_3.setLayout(null);
+        
+        Button uploadBtn = new Button("Upload File");
+        uploadBtn.setBounds(57, 75, 82, 22);
+        panel_3.add(uploadBtn);
+        
+        Button downloadBtn = new Button("Download File");
+        downloadBtn.setBounds(185, 75, 82, 22);
+        panel_3.add(downloadBtn);
         
         this.addWindowListener(new WindowAdapter() {
             @Override

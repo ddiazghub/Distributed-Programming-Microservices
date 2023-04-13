@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.swing.JScrollPane;
 
 public class DistributedServiceClientAppView extends JFrame {
 
