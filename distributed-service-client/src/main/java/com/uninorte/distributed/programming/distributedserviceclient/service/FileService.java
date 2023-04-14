@@ -12,13 +12,17 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileService {
     
-    private static Path DOWNLOADS = Paths.get(System.getProperty("user.home"));
+    private static Path DOWNLOADS = Paths.get(System.getProperty("user.home")).resolve("Downloads");
     
     private List<URI> urls;
     private int current = -1;
@@ -40,6 +44,9 @@ public class FileService {
     
     @Autowired
     private ClientContext context;
+    
+    @Autowired
+    private FileCipher cipher;
     
     public FileService(@Value("#{${file.service.urls}}") List<String> urls) throws URISyntaxException  {
         this.urls = new ArrayList<>();
@@ -57,12 +64,13 @@ public class FileService {
     
     public void upload(File file) throws IOException {
         String name = file.getName();
-        MultipartFile multipart = new MockMultipartFile(name, name, null, new FileInputStream(file));
+        byte[] encrypted = cipher.encrypt(file.toPath(), context.getUser().getUser_password());
+        MultipartFile multipart = new MockMultipartFile(name, name, null, encrypted);
         proxy.uploadFile(nextUrl(), context.getToken(), multipart);
     }
     
-    public void download(String filename) throws IOException {
-        ResponseEntity<InputStreamResource> response = proxy.downloadFile(nextUrl(), context.getToken(), filename);
+    public Path download(String filename, String password) throws IOException {
+        byte[] response = proxy.downloadFile(nextUrl(), context.getToken(), filename);
         String[] parts = filename.split("\\.");
         String extension = "." + (parts.length == 1 ? "" : String.join(".", Arrays.copyOfRange(parts, 1, parts.length)));
         Path filepath = DOWNLOADS.resolve(filename);
@@ -73,7 +81,9 @@ public class FileService {
             filepath = DOWNLOADS.resolve(parts[0] + i + extension);
         }
         
-        Files.copy(response.getBody().getInputStream(), filepath);
+        cipher.decrypt(filepath, password, response);
+        
+        return filepath;
     }
     
 }

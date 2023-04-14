@@ -71,16 +71,16 @@ public class ClientContext {
         this.postsChanged.set(postsChanged);
     }
 
-	public ConcurrentSkipListSet<UserFile> getFiles() {
-		return files;
-	}
+    public ConcurrentSkipListSet<UserFile> getFiles() {
+        return files;
+    }
 
-	public boolean getFilesChanged() {
-		return filesChanged.get();
-	}
-    
-	public void setFilesChanged(boolean filesChanged) {
-        this.postsChanged.set(filesChanged);
+    public boolean getFilesChanged() {
+        return filesChanged.get();
+    }
+
+    public void setFilesChanged(boolean filesChanged) {
+        this.filesChanged.set(filesChanged);
     }
 	
 }

@@ -21,34 +21,22 @@ import java.awt.event.ActionEvent;
 import java.awt.Button;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.swing.JScrollPane;
 
 public class DistributedServiceClientAppView extends JFrame {
 
-    private DistributedServiceProxy proxy;
-    private ClientContext context;
     private List<TCPService> tcpServices;
-    private FileService files;
-    private JPanel contentPane;
-    private JTextField UserIdField;
-    private JTextField PasswordField;
-    private JTextField FormEmailField;
+    private final JPanel contentPane;
     private Logger log = LoggerFactory.getLogger(DistributedServiceClientAppView.class);
 
     /**
      * Create the frame.
      */
     public DistributedServiceClientAppView(DistributedServiceProxy proxy, ClientContext context, List<TCPService> tcpServices, FileService files) {
-        this.proxy = proxy;
-        this.context = context;
         this.tcpServices = tcpServices;
-        this.files = files;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 387, 312);
         contentPane = new JPanel();
@@ -71,7 +59,6 @@ public class DistributedServiceClientAppView extends JFrame {
         JTextField UserIdField = new JTextField();
         UserIdField.setBounds(165, 98, 127, 22);
         contentPane.add(UserIdField);
-        this.UserIdField = UserIdField;
 
         JLabel lblNewLabel_1_1 = new JLabel("Password:");
         lblNewLabel_1_1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -82,7 +69,6 @@ public class DistributedServiceClientAppView extends JFrame {
         JTextField PasswordField = new JTextField();
         PasswordField.setBounds(165, 123, 127, 22);
         contentPane.add(PasswordField);
-        this.PasswordField = PasswordField;
 
         JLabel lblNewLabel_1_2 = new JLabel("Email:");
         lblNewLabel_1_2.setHorizontalAlignment(SwingConstants.CENTER);
@@ -93,28 +79,17 @@ public class DistributedServiceClientAppView extends JFrame {
         JTextField FormEmailField = new JTextField();
         FormEmailField.setBounds(165, 148, 127, 22);
         contentPane.add(FormEmailField);
-        this.FormEmailField = FormEmailField;
         DistributedServiceClientAppView view = this;
 
         Button btnConnectWindow = new Button("Create Client\r\n");
         
         btnConnectWindow.addActionListener((ActionEvent e) -> {
             //create user
-            if(!"".equals(UserIdField.getText()) && !"".equals(PasswordField.getText()) && !"".equals(FormEmailField.getText())) {
+            if (!"".equals(UserIdField.getText()) && !"".equals(PasswordField.getText()) && !"".equals(FormEmailField.getText())) {
                 User user = new User(UserIdField.getText(), PasswordField.getText(), FormEmailField.getText());
         
                 try {
                     context.init(user);
-                
-                    //String filename = "C:\\Users\\david\\Downloads\\linealfor.c";
-                    //log.info("Uploading file \"" + filename + "\":");
-
-                    /*try {
-                        files.upload(new File(filename));
-                        log.info("File uploaded");
-                    } catch (Exception ex) {
-                        log.error("Error", ex);
-                    }*/
                 
                     EventQueue.invokeLater(() -> {
                         DistributedServiceClientConnectedView frame1 = new DistributedServiceClientConnectedView(proxy, context, tcpServices, files);
@@ -125,8 +100,9 @@ public class DistributedServiceClientAppView extends JFrame {
                     showMessageDialog(null, "Connected");
                 } catch (Exception ex) {
                     showMessageDialog(null, "Connection to server failed", "Error", JOptionPane.ERROR_MESSAGE);
+                    log.error("Error", ex);
                 }
-            }else{
+            } else{
                 showMessageDialog(null, "There are empty fields, please write info");
             }
         });

@@ -15,7 +15,7 @@ import java.util.Objects;
  *
  * @author david
  */
-public class PostMessage implements Comparable<PostMessage>{
+public class PostMessage implements Comparable<PostMessage> {
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("<HH:mm dd.MM.yyyy>");
     
@@ -76,7 +76,7 @@ public class PostMessage implements Comparable<PostMessage>{
         
         return str
             .append(creationDateTime)
-            .append(" [user_id=")
+            .append("Post [user_id=")
             .append(this.userId)
             .append("]: ")
             .append(this.post_content)

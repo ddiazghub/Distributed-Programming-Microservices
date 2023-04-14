@@ -67,6 +67,8 @@ services:
       - "5432:5432"
     networks:
       - services-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
@@ -105,3 +107,4 @@ networks:
 
 volumes:
   file-service:
+  pgdata:

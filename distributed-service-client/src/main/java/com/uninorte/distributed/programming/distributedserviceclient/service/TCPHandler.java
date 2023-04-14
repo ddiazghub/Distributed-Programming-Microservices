@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 @Sharable
 public class TCPHandler extends ChannelInboundHandlerAdapter {
     
-    private Logger log = LoggerFactory.getLogger(TCPHandler.class);
+    private final Logger log = LoggerFactory.getLogger(TCPHandler.class);
     
     @Autowired
     private DistributedServiceProxy proxy;
@@ -48,19 +48,19 @@ public class TCPHandler extends ChannelInboundHandlerAdapter {
             String token = context.getToken();
             
             if (token != null) {
-            	switch(notification.getNotification_type()) {
-            	case "new_post" -> {
-	                List<PostMessage> posts = proxy.getPosts(context.getToken(), notification.getUser_id());
-	                log.info("Received new post messages: " + Arrays.toString(posts.toArray()));
-	                context.getPosts().addAll(posts);
-	                context.setPostsChanged(true);
-                }
-            	case "new_file" -> {
-            		List<UserFile> files = proxy.getFiles(context.getToken(), notification.getUser_id());
-	                log.info("Received new file: " + Arrays.toString(files.toArray()));
-	                context.getFiles().addAll(files);	                
-	                context.setFilesChanged(true);
-            	}
+            	switch (notification.getNotification_type()) {
+                    case "new_post" -> {
+                        List<PostMessage> posts = proxy.getPosts(context.getToken(), notification.getUser_id());
+                        log.info("Received new post messages: " + Arrays.toString(posts.toArray()));
+                        context.getPosts().addAll(posts);
+                        context.setPostsChanged(true);
+                    }
+                    case "new_file" -> {
+                        List<UserFile> files = proxy.getFiles(context.getToken(), notification.getUser_id());
+                        log.info("Received new files: " + Arrays.toString(files.toArray()));
+                        context.getFiles().addAll(files);	                
+                        context.setFilesChanged(true);
+                    }
             	}
             }
             

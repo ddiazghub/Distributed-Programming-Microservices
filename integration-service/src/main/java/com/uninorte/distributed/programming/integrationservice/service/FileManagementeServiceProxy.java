@@ -5,13 +5,8 @@
 package com.uninorte.distributed.programming.integrationservice.service;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.multipart.MultipartFile;
 import com.uninorte.distributed.programming.integrationservice.FileUploadConfiguration;
 import com.uninorte.distributed.programming.integrationservice.model.UserFile;
 import java.util.List;

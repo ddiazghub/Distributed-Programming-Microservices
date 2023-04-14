@@ -59,7 +59,7 @@ public class FileController {
     public UserFile upload(@RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestParam("file") MultipartFile file) throws IOException {
         User user = auth.authorize(authorization);
         String uploadedFilename = files.upload(file);
-        UserFile userFile = new UserFile(user.getUser_id(), uploadedFilename);
+        UserFile userFile = fileRepo.save(new UserFile(user.getUser_id(), uploadedFilename));
         
         try {
             tcp.newFile(user.getUser_id());
@@ -67,7 +67,7 @@ public class FileController {
             log.warn("Could not contact TCP service.");
         }
         
-        return fileRepo.save(userFile);
+        return userFile;
     }
     
     @GetMapping(path = "/download/{filename}")

@@ -37,14 +37,18 @@ import javax.swing.Timer;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import java.awt.BorderLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionListener;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 
 public class DistributedServiceClientConnectedView extends JFrame {
 
-	private DefaultTreeModel model;
-	private JTree filesTree;
+    private DefaultTreeModel model;
+    private JTree filesTree;
     private JPanel contentPane;
     private JTextField sendMessageField;
     private JTextField tokenIdField;
@@ -147,21 +151,22 @@ public class DistributedServiceClientConnectedView extends JFrame {
         
         Button uploadBtn = new Button("Upload File");
         uploadBtn.addActionListener(e -> {
-    		fc = new JFileChooser();
-    		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    		fc.setAcceptAllFileFilterUsed(true);
-    		int option = fc.showOpenDialog(this);
-    		
-    		if(option == JFileChooser.APPROVE_OPTION) {
-    			try {
+            fc = new JFileChooser(Paths.get(System.getProperty("user.home")).resolve("Downloads").toFile());
+            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fc.setAcceptAllFileFilterUsed(true);
+            int option = fc.showOpenDialog(this);
+
+            if(option == JFileChooser.APPROVE_OPTION) {
+                try {
                     files.upload(fc.getSelectedFile());
                     log.info("File uploaded");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "ERROR", "no se pudo subir el archivo", JOptionPane.ERROR_MESSAGE);
-                }      			
-    		}else if(option == JFileChooser.ERROR_OPTION){
-    			JOptionPane.showMessageDialog(null, "ERROR", "no se pudo subir el archivo", JOptionPane.ERROR_MESSAGE);
-    		}
+                } catch (HeadlessException | IOException ex) {
+                    showError("Upload fail");
+                    log.error("Error", ex);
+                }
+            } else if (option == JFileChooser.ERROR_OPTION){
+                showError("Upload fail");
+            }
         });
         
         uploadBtn.setBounds(77, 205, 82, 22);
@@ -176,13 +181,12 @@ public class DistributedServiceClientConnectedView extends JFrame {
         panel_4.add(scrollPane_1);
         
         JTree filesTree = new JTree();
-        filesTree.setModel(new DefaultTreeModel(
-        	new DefaultMutableTreeNode("files") {
-        		{
-        		}
-        	}
-        ));
         scrollPane_1.setViewportView(filesTree);
+        
+        filesTree.addTreeSelectionListener(e -> {
+            if (filesTree.getSelectionPath() != null && !((DefaultMutableTreeNode) filesTree.getSelectionPath().getLastPathComponent()).isLeaf())
+                filesTree.setSelectionPath(null);
+        });
         
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -209,28 +213,31 @@ public class DistributedServiceClientConnectedView extends JFrame {
         timer.setRepeats(true);
         timer.start();
         
+        this.filesTree = filesTree;
         this.model = new DefaultTreeModel(null);
         this.filesTree.setModel(model);
-        
+        this.printFiles();
         filesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        this.filesTree = filesTree;
         
-        downloadBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		TreePath path = filesTree.getSelectionPath();
-        		
-        		if (path == null) {
-        			JOptionPane.showMessageDialog(null, "ERROR", "Nose ha seleccionado un archivo", JOptionPane.ERROR_MESSAGE);
-        			String filename = path.getLastPathComponent().toString();
-        			try {
-						files.download(filename);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(null, "ERROR", "No se puede descargar el archivo", JOptionPane.ERROR_MESSAGE);
-					}
-        		}
-        	}
+        downloadBtn.addActionListener(e -> {
+            TreePath path = filesTree.getSelectionPath();
+
+            if (path == null) {
+                showError("No file selected");
+            } else {
+                try {
+                    DefaultMutableTreeNode selected = ((DefaultMutableTreeNode) path.getLastPathComponent());
+                    UserFile file = (UserFile) selected.getUserObject();
+                    String key = Objects.equals(file.getUserId(), context.getUser().getUser_id()) ? context.getUser().getUser_password() : JOptionPane.showInputDialog("Input the decryption key:");
+                    Path filepath = files.download(file.getFilename(), key);
+                    showMessage("File downloaded to path: " + filepath.toAbsolutePath().toString());
+                } catch (IOException ex) {
+                    log.warn("Error", ex);
+                    showError("Download Failed");
+                } catch (RuntimeException ex) {
+                    showError("Decryption failed. The encrypted file was still downloaded to the downloads folder");
+                }
+            }
         });
         
     }
@@ -248,10 +255,18 @@ public class DistributedServiceClientConnectedView extends JFrame {
     	this.filesTree.removeAll();
     	DefaultMutableTreeNode node = new DefaultMutableTreeNode("files");
     	
-    	for(UserFile file: this.context.getFiles()) {
-    		node.add(new DefaultMutableTreeNode(file.getFilename()));
+    	for (UserFile file: this.context.getFiles()) {
+            node.add(new DefaultMutableTreeNode(file));
     	}
 
     	this.model.setRoot(node);
+    }
+    
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(null, message, "Message", JOptionPane.INFORMATION_MESSAGE);
     }
 }

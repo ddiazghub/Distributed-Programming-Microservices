@@ -8,12 +8,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  *
  * @author david
  */
-public class UserFile {
+public class UserFile implements Comparable<UserFile> {
     
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer file_id;
@@ -73,4 +74,38 @@ public class UserFile {
         this.created_at = created_at;
     }
 
+    @Override
+    public String toString() {
+        return this.filename;
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.file_id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+        if (obj == null) {
+            return false;
+        }
+        
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        final UserFile other = (UserFile) obj;
+        return Objects.equals(this.file_id, other.file_id);
+    }
+
+    @Override
+    public int compareTo(UserFile o) {
+        // TODO Auto-generated method stub
+        return this.file_id.compareTo(o.file_id);
+    }
+    
 }

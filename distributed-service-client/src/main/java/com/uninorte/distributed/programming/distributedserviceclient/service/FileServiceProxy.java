@@ -28,6 +28,6 @@ public interface FileServiceProxy {
     public String uploadFile(URI base, @RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @RequestPart(value = "file") MultipartFile file);
     
     @GetMapping(path = "/download/{filename}")
-    public ResponseEntity<InputStreamResource> downloadFile(URI base, @RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @PathVariable String filename);
+    public byte[] downloadFile(URI base, @RequestHeader(name = "Authorization",defaultValue = "APP-CODE;UNIXTIMESTAMP;UNIQ-TOKEN") String authorization, @PathVariable String filename);
 
 }
