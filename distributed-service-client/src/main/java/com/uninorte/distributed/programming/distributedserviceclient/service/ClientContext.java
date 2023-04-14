@@ -6,6 +6,7 @@ package com.uninorte.distributed.programming.distributedserviceclient.service;
 
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.model.User;
+import com.uninorte.distributed.programming.distributedserviceclient.model.UserFile;
 import com.uninorte.distributed.programming.distributedserviceclient.model.UserWithToken;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,11 +24,14 @@ public class ClientContext {
     private User user;
     private ConcurrentSkipListSet<PostMessage> posts;
     private final AtomicBoolean postsChanged;
+    private ConcurrentSkipListSet<UserFile> files;
+    private final AtomicBoolean filesChanged;
     private DistributedServiceProxy proxy;
     
     @Autowired
     public ClientContext(DistributedServiceProxy proxy){
         this.postsChanged = new AtomicBoolean(false);
+        this.filesChanged = new AtomicBoolean(false);
         this.proxy = proxy;
     }
 
@@ -36,6 +40,7 @@ public class ClientContext {
         this.user = data.getUser();
         this.token = data.getToken();
         this.posts = new ConcurrentSkipListSet<>(this.proxy.getPosts(this.token, null));
+        this.files = new ConcurrentSkipListSet<>(this.proxy.getFiles(this.token, null));
     }
     
     public String getToken() {
@@ -65,5 +70,17 @@ public class ClientContext {
     public void setPostsChanged(boolean postsChanged) {
         this.postsChanged.set(postsChanged);
     }
+
+	public ConcurrentSkipListSet<UserFile> getFiles() {
+		return files;
+	}
+
+	public boolean getFilesChanged() {
+		return filesChanged.get();
+	}
     
+	public void setFilesChanged(boolean filesChanged) {
+        this.postsChanged.set(filesChanged);
+    }
+	
 }

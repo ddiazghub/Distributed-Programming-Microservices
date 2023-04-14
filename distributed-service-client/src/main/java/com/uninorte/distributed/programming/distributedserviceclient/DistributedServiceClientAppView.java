@@ -106,15 +106,15 @@ public class DistributedServiceClientAppView extends JFrame {
                 try {
                     context.init(user);
                 
-                    String filename = "C:\\Users\\david\\Downloads\\linealfor.c";
-                    log.info("Uploading file \"" + filename + "\":");
+                    //String filename = "C:\\Users\\david\\Downloads\\linealfor.c";
+                    //log.info("Uploading file \"" + filename + "\":");
 
-                    try {
+                    /*try {
                         files.upload(new File(filename));
                         log.info("File uploaded");
                     } catch (Exception ex) {
                         log.error("Error", ex);
-                    }
+                    }*/
                 
                     EventQueue.invokeLater(() -> {
                         DistributedServiceClientConnectedView frame1 = new DistributedServiceClientConnectedView(proxy, context, tcpServices, files);

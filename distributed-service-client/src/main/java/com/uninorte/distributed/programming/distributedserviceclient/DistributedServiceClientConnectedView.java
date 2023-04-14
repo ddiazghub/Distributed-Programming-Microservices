@@ -3,12 +3,19 @@ package com.uninorte.distributed.programming.distributedserviceclient;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.service.ClientContext;
 import com.uninorte.distributed.programming.distributedserviceclient.service.DistributedServiceProxy;
 import com.uninorte.distributed.programming.distributedserviceclient.service.FileService;
 import com.uninorte.distributed.programming.distributedserviceclient.service.TCPService;
+import com.uninorte.distributed.programming.distributedserviceclient.model.UserFile;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -21,6 +28,8 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JTextArea;
@@ -29,9 +38,13 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeModel;
 
 public class DistributedServiceClientConnectedView extends JFrame {
 
+	private DefaultTreeModel model;
+	private JTree filesTree;
     private JPanel contentPane;
     private JTextField sendMessageField;
     private JTextField tokenIdField;
@@ -41,6 +54,7 @@ public class DistributedServiceClientConnectedView extends JFrame {
     private FileService files;
     private JTextArea postsTextArea;
     private JFileChooser fc;
+    private Logger log = LoggerFactory.getLogger(DistributedServiceClientAppView.class);
     
     /**
      * Create the frame.
@@ -50,7 +64,6 @@ public class DistributedServiceClientConnectedView extends JFrame {
         this.context = context;
         this.tcpServices = tcpServices;
         this.files = files;
-        
         DistributedServiceClientConnectedView view = this;
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -128,21 +141,48 @@ public class DistributedServiceClientConnectedView extends JFrame {
         tabbedPane.addTab("Upload & Download", null, panel_3, null);
         panel_3.setLayout(null);
         
-        Button selectFileBtn = new Button("Select File");
-        selectFileBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		fc = new JFileChooser();
-        		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        		fc.setAcceptAllFileFilterUsed(true);
-        		
-        	}
-        });
-        selectFileBtn.setBounds(51, 52, 82, 22);
-        panel_3.add(selectFileBtn);
+        Button downloadBtn = new Button("Download File");
+        downloadBtn.setBounds(192, 205, 82, 22);
+        panel_3.add(downloadBtn);
         
         Button uploadBtn = new Button("Upload File");
-        uploadBtn.setBounds(184, 52, 82, 22);
+        uploadBtn.addActionListener(e -> {
+    		fc = new JFileChooser();
+    		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    		fc.setAcceptAllFileFilterUsed(true);
+    		int option = fc.showOpenDialog(this);
+    		
+    		if(option == JFileChooser.APPROVE_OPTION) {
+    			try {
+                    files.upload(fc.getSelectedFile());
+                    log.info("File uploaded");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "ERROR", "no se pudo subir el archivo", JOptionPane.ERROR_MESSAGE);
+                }      			
+    		}else if(option == JFileChooser.ERROR_OPTION){
+    			JOptionPane.showMessageDialog(null, "ERROR", "no se pudo subir el archivo", JOptionPane.ERROR_MESSAGE);
+    		}
+        });
+        
+        uploadBtn.setBounds(77, 205, 82, 22);
         panel_3.add(uploadBtn);
+        
+        JPanel panel_4 = new JPanel();
+        panel_4.setBounds(38, 0, 275, 199);
+        panel_3.add(panel_4);
+        panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.X_AXIS));
+        
+        JScrollPane scrollPane_1 = new JScrollPane();
+        panel_4.add(scrollPane_1);
+        
+        JTree filesTree = new JTree();
+        filesTree.setModel(new DefaultTreeModel(
+        	new DefaultMutableTreeNode("files") {
+        		{
+        		}
+        	}
+        ));
+        scrollPane_1.setViewportView(filesTree);
         
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -159,10 +199,39 @@ public class DistributedServiceClientConnectedView extends JFrame {
                 this.context.setPostsChanged(false);
                 this.printPosts();
             }
+            
+            if (this.context.getFilesChanged()) {
+                this.context.setFilesChanged(false);
+                this.printFiles();
+            }
         });
         
         timer.setRepeats(true);
         timer.start();
+        
+        this.model = new DefaultTreeModel(null);
+        this.filesTree.setModel(model);
+        
+        filesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        this.filesTree = filesTree;
+        
+        downloadBtn.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		TreePath path = filesTree.getSelectionPath();
+        		
+        		if (path == null) {
+        			JOptionPane.showMessageDialog(null, "ERROR", "Nose ha seleccionado un archivo", JOptionPane.ERROR_MESSAGE);
+        			String filename = path.getLastPathComponent().toString();
+        			try {
+						files.download(filename);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "ERROR", "No se puede descargar el archivo", JOptionPane.ERROR_MESSAGE);
+					}
+        		}
+        	}
+        });
         
     }
     
@@ -173,5 +242,16 @@ public class DistributedServiceClientConnectedView extends JFrame {
             text.append(post.toString()).append('\n');
         
         this.postsTextArea.setText(text.toString());
+    }
+    
+    public void printFiles() {  	
+    	this.filesTree.removeAll();
+    	DefaultMutableTreeNode node = new DefaultMutableTreeNode("files");
+    	
+    	for(UserFile file: this.context.getFiles()) {
+    		node.add(new DefaultMutableTreeNode(file.getFilename()));
+    	}
+
+    	this.model.setRoot(node);
     }
 }

@@ -7,6 +7,8 @@ package com.uninorte.distributed.programming.distributedserviceclient.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uninorte.distributed.programming.distributedserviceclient.model.PostMessage;
 import com.uninorte.distributed.programming.distributedserviceclient.model.TCPNotification;
+import com.uninorte.distributed.programming.distributedserviceclient.model.UserFile;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -46,10 +48,20 @@ public class TCPHandler extends ChannelInboundHandlerAdapter {
             String token = context.getToken();
             
             if (token != null) {
-                List<PostMessage> posts = proxy.getPosts(context.getToken(), notification.getUser_id());
-                log.info("Received new post messages: " + Arrays.toString(posts.toArray()));
-                context.getPosts().addAll(posts);
-                context.setPostsChanged(true);
+            	switch(notification.getNotification_type()) {
+            	case "new_post" -> {
+	                List<PostMessage> posts = proxy.getPosts(context.getToken(), notification.getUser_id());
+	                log.info("Received new post messages: " + Arrays.toString(posts.toArray()));
+	                context.getPosts().addAll(posts);
+	                context.setPostsChanged(true);
+                }
+            	case "new_file" -> {
+            		List<UserFile> files = proxy.getFiles(context.getToken(), notification.getUser_id());
+	                log.info("Received new file: " + Arrays.toString(files.toArray()));
+	                context.getFiles().addAll(files);	                
+	                context.setFilesChanged(true);
+            	}
+            	}
             }
             
             buffer.release();
