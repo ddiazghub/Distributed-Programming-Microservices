@@ -16,11 +16,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
@@ -62,14 +57,14 @@ public class FileService {
         return this.urls.get(current);
     }
     
-    public void upload(File file) throws IOException {
+    public void upload(File file, boolean encrypt) throws IOException {
         String name = file.getName();
-        byte[] encrypted = cipher.encrypt(file.toPath(), context.getUser().getUser_password());
-        MultipartFile multipart = new MockMultipartFile(name, name, null, encrypted);
+        byte[] data = encrypt ? cipher.encrypt(file.toPath(), context.getUser().getUser_password()) : Files.readAllBytes(file.toPath());
+        MultipartFile multipart = new MockMultipartFile(name, name, null, data);
         proxy.uploadFile(nextUrl(), context.getToken(), multipart);
     }
     
-    public Path download(String filename, String password) throws IOException {
+    public Path download(String filename, String password, boolean decrypt) throws IOException {
         byte[] response = proxy.downloadFile(nextUrl(), context.getToken(), filename);
         String[] parts = filename.split("\\.");
         String extension = "." + (parts.length == 1 ? "" : String.join(".", Arrays.copyOfRange(parts, 1, parts.length)));
@@ -81,7 +76,10 @@ public class FileService {
             filepath = DOWNLOADS.resolve(parts[0] + i + extension);
         }
         
-        cipher.decrypt(filepath, password, response);
+        if (decrypt)
+            cipher.decrypt(filepath, password, response);
+        else
+            Files.write(filepath, response);
         
         return filepath;
     }

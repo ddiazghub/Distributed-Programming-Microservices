@@ -158,7 +158,8 @@ public class DistributedServiceClientConnectedView extends JFrame {
 
             if(option == JFileChooser.APPROVE_OPTION) {
                 try {
-                    files.upload(fc.getSelectedFile());
+                    int opt = showConfirm("Encrypt file?");
+                    files.upload(fc.getSelectedFile(), opt == JOptionPane.YES_OPTION);
                     log.info("File uploaded");
                 } catch (HeadlessException | IOException ex) {
                     showError("Upload fail");
@@ -228,8 +229,19 @@ public class DistributedServiceClientConnectedView extends JFrame {
                 try {
                     DefaultMutableTreeNode selected = ((DefaultMutableTreeNode) path.getLastPathComponent());
                     UserFile file = (UserFile) selected.getUserObject();
-                    String key = Objects.equals(file.getUserId(), context.getUser().getUser_id()) ? context.getUser().getUser_password() : JOptionPane.showInputDialog("Input the decryption key:");
-                    Path filepath = files.download(file.getFilename(), key);
+                    String key = "";
+                    boolean decrypt = false;
+                    
+                    if (Objects.equals(file.getUserId(), context.getUser().getUser_id())) {
+                        key = context.getUser().getUser_password();
+                    } else {
+                        if (showConfirm("Encrypt file?") == JOptionPane.YES_OPTION) {
+                            key = JOptionPane.showInputDialog("Input the decryption key:");
+                            decrypt = true;
+                        }
+                    }
+                    
+                    Path filepath = files.download(file.getFilename(), key, decrypt);
                     showMessage("File downloaded to path: " + filepath.toAbsolutePath().toString());
                 } catch (IOException ex) {
                     log.warn("Error", ex);
@@ -268,5 +280,9 @@ public class DistributedServiceClientConnectedView extends JFrame {
     
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(null, message, "Message", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    public int showConfirm(String message) {
+        return JOptionPane.showConfirmDialog(null, message, "Confirm", JOptionPane.YES_NO_OPTION);
     }
 }
