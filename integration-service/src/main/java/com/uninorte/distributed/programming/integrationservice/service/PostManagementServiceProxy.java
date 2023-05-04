@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author david
  */
-@FeignClient(name = "post-management-service")
+@FeignClient(name = "post-management-service", url="http://${POST_MANAGEMENT_SERVICE_SERVICE_HOST:localhost}:8010")
 public interface PostManagementServiceProxy {
     
     @GetMapping(path = "/posts")

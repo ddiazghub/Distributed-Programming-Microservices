@@ -34,10 +34,6 @@
 			<scope>test</scope>
 		</dependency>
                 <dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>			
-		</dependency>
-                <dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.0.0-M7</version>
@@ -64,6 +60,15 @@
                     <artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
                 <dependency>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </dependency>
+                <!--
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>			
+		</dependency>
+                <dependency>
 		    <groupId>io.micrometer</groupId>
 		    <artifactId>micrometer-observation</artifactId>
 		</dependency>
@@ -79,6 +84,7 @@
                     <groupId>io.github.openfeign</groupId>
                     <artifactId>feign-micrometer</artifactId>
 		</dependency>
+                -->
 	</dependencies>
         <dependencyManagement>
             <dependencies>

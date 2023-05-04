@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * @author david
  */
-@FeignClient(name = "user-management-service")
+@FeignClient(name = "user-management-service", url="http://${USER_MANAGEMENT_SERVICE_SERVICE_HOST:localhost}:8000")
 public interface UserManagementServiceProxy {
     
     @GetMapping(path = "/users")

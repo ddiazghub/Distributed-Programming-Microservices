@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  *
  * @author david
  */
-@FeignClient(name = "tcp-service")
+@FeignClient(name = "tcp-service", url="http://${TCP_SERVICE_SERVICE_HOST:localhost}:8030")
 public interface TCPServiceProxy {
     
     @PostMapping(path = "/new_file")

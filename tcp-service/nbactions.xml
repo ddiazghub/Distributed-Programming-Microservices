@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-build-image</actionName>
+            <displayName>build-image</displayName>
+            <goals>
+                <goal>spring-boot:build-image</goal>
+                <goal>-DskipTests</goal>
+            </goals>
+        </action>
+    </actions>
